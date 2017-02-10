@@ -2,20 +2,19 @@ const fs = require('fs');
 const express = require('express');
 const app = express();
 
-const baseDir = 'x:/music';
+var config = require('./config.json');
 
 app.get('/hello', function(req, res) {
 	res.send("hello world!");
 });
 
-app.get('/fs/', function(req, res) {
-	var files = fs.readdirSync(baseDir);
-	res.send(files);
-});
-
-app.get('/fs/:path', function(req, res) {
-	var path = req.params.path;
-	path = baseDir + '/' + path;
+app.get('/dir', function(req, res) {
+	var path = req.query.path;
+	if (typeof path === 'undefined') {
+		res.send('You must specify query parameter \'path\'');
+		return;
+	}
+	path = config.baseDir + '/' + path;
 	var files = fs.readdirSync(path);
 	res.send(files);
 });
