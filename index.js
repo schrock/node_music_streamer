@@ -51,11 +51,13 @@ app.get('/dir', function (req, res) {
 	res.send(JSON.stringify(dirEntries, null, 4));
 });
 
-app.get('play', function (req, res) {
+app.get('/play', function (req, res) {
 	var queryPath = req.query.path;
 	var realPath = config.baseDir + '/' + queryPath;
 
-	
+	res.setHeader('Content-Type', 'audio/mpeg');
+	res.setHeader('Content-Length', fs.statSync(realPath).size);
+	fs.createReadStream(realPath).pipe(res);
 });
 
 app.listen(3000, function () {
