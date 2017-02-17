@@ -2,7 +2,8 @@
 var config = require('./config.json');
 
 // 3rd party
-const app = require('express')();
+const express = require('express');
+const app = express();
 const fs = require('fs');
 
 // classes
@@ -60,6 +61,11 @@ app.get('/play', function (req, res) {
 	fs.createReadStream(realPath).pipe(res);
 });
 
+// serve client-side web app
+app.use(express.static('www'));
+// serve client-side dependencies
+app.use('/node_modules', express.static('node_modules'));
+
 app.listen(3000, function () {
-	console.log('Example app listening on port 3000!');
+	console.log('node_music_streamer running on port 3000...');
 });
