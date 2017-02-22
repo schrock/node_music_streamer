@@ -23,7 +23,14 @@ function handleDirContents(parentId, dirEntries) {
 }
 
 function handleDirs(parentId, dirs) {
-
+	$('#' + parentId).append('<ul id="ul_' + parentId + '"></ul>');
+	for (var dir of dirs) {
+		$('#ul_' + parentId).append('<li id="li_' + dir.name + '">' + dir.name + '</li>');
+		const name = dir.name;
+		$('#li_' + dir.name).click(function () {
+			console.log(name);
+		});
+	}
 }
 
 function handleFiles(files) {

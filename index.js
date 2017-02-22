@@ -32,8 +32,9 @@ app.get('/dir', function (req, res) {
 
 	var dirEntries = [];
 	for (var fileName of dirContents) {
-		var filePath = realPath + '/' + fileName;
-		var stat = fs.statSync(filePath);
+		var filePath = queryPath + '/' + fileName;
+		var realPath = config.baseDir + '/' + filePath;
+		var stat = fs.statSync(realPath);
 		if (stat.isDirectory()) {
 			var dirUrl = req.protocol + '://' + req.hostname + ':' + req.socket.localPort + '/dir?path=' + queryPath + '/' + fileName;
 			dirEntries.push(new Directory(fileName, filePath, dirUrl));
