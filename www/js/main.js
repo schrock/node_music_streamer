@@ -1,14 +1,17 @@
 $(document).ready(function () {
-	// get root files and put in browser div
-	$.get('/dir?path=', function (data, status) {
-		if (status == 'success') {
-			handleDirContents('browser', data);
-			//$('#browser').html(data);
-		}
-	});
+	// get root browser contents
+	browser_bootstrap();
 });
 
-function handleDirContents(parentId, dirEntries) {
+function browser_bootstrap() {
+	$.get('/dir?path=', function (data, status) {
+		if (status == 'success') {
+			handleDirContents('div.browser', data);
+		}
+	});
+}
+
+function handleDirContents(parent, dirEntries) {
 	var dirs = [];
 	var files = [];
 	for (var dirEntry of dirEntries) {
@@ -18,19 +21,26 @@ function handleDirContents(parentId, dirEntries) {
 			files.push(dirEntry);
 		}
 	}
-	handleDirs(parentId, dirs);
+	handleDirs(parent, dirs);
 	handleFiles(files);
 }
 
-function handleDirs(parentId, dirs) {
-	$('#' + parentId).append('<ul id="ul_' + parentId + '"></ul>');
+function handleDirs(parent, dirs) {
+	$(parent).append('<ul></ul>');
 	for (var dir of dirs) {
-		$('#ul_' + parentId).append('<li id="li_' + dir.name + '">' + dir.name + '</li>');
-		const name = dir.name;
-		$('#li_' + dir.name).click(function () {
-			console.log(name);
-		});
+		$(parent + ' ul').append('<li>' + dir.name + '</li>');
+		$(parent + ' ul li').last().data('dirUrl', dir.dirUrl);
 	}
+	$(parent + ' ul li').click(function () {
+		var newParent = parent + ' ul li';
+		var dirUrl = $(this).data('dirUrl');
+		$.get(dirUrl, function (data, status) {
+			if (status == 'success') {
+				console.log(data);
+				//handleDirContents(newParent, data);
+			}
+		});
+	});
 }
 
 function handleFiles(files) {
