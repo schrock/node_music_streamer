@@ -30,17 +30,17 @@ function handleDirs(parent, dirs) {
 	for (var dir of dirs) {
 		$(parent + ' ul').append('<li>' + dir.name + '</li>');
 		$(parent + ' ul li').last().data('dirUrl', dir.dirUrl);
-	}
-	$(parent + ' ul li').click(function () {
-		var newParent = parent + ' ul li';
-		var dirUrl = $(this).data('dirUrl');
-		$.get(dirUrl, function (data, status) {
-			if (status == 'success') {
-				console.log(data);
-				//handleDirContents(newParent, data);
-			}
+		$(parent + ' ul li').last().click(function () {
+			var element = this;
+			var dirUrl = $(element).data('dirUrl');
+			$.get(dirUrl, function (data, status) {
+				if (status == 'success') {
+					console.log(data);
+					handleDirContents(OptimalSelect.select(element), data);
+				}
+			});
 		});
-	});
+	}
 }
 
 function handleFiles(files) {
