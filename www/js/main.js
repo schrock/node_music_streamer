@@ -32,13 +32,17 @@ function handleDirs(parent, dirs) {
 		$(parent + ' ul li').last().data('dirUrl', dir.dirUrl);
 		$(parent + ' ul li').last().click(function () {
 			var element = this;
-			var dirUrl = $(element).data('dirUrl');
-			$.get(dirUrl, function (data, status) {
-				if (status == 'success') {
-					console.log(data);
-					handleDirContents(OptimalSelect.select(element), data);
-				}
-			});
+			if ($(element).children().length > 0) {
+				$(element).children().remove();
+			} else {
+				var dirUrl = $(element).data('dirUrl');
+				$.get(dirUrl, function (data, status) {
+					if (status == 'success') {
+						handleDirContents(OptimalSelect.select(element), data);
+					}
+				});
+			}
+			return false;
 		});
 	}
 }
