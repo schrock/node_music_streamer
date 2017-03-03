@@ -1,3 +1,29 @@
 body {
-    background-color: lightblue;
+	background-color: teal;
+}
+
+div.browser {
+	outline: 2px solid red;
+	outline-offset: -2px;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 20%;
+	height: 100%;
+	overflow: auto;
+}
+
+div.playlist {
+	outline: 2px solid blue;
+	outline-offset: -2px;
+	position: absolute;
+	left: 20%;
+	bottom: 0px;
+	width: 80%;
+	height: 50%;
+	overflow: auto;
+}
+
+div.selected {
+	background-color: lightgray;
 }

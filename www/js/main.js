@@ -48,5 +48,13 @@ function handleDirs(parent, dirs) {
 }
 
 function handleFiles(files) {
-
+	$('div.playlist').children().remove();
+	for (var file of files) {
+		$('div.playlist').append('<div>' + file.name + '</div>');
+	}
+	$('div.playlist div').click(function () {
+		$('div.playlist div').removeClass('selected');
+		$(this).addClass('selected');
+		return false;
+	});
 }
