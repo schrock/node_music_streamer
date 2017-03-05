@@ -5,11 +5,26 @@ $(document).ready(function () {
 	// get root browser contents
 	browser_bootstrap();
 	// hookup audio player buttons
-	$('button.stop').click(audioStop);
+	$('button.previous').click(audioPrevious);
 	$('button.play').click(audioPlay);
 	$('button.pause').click(audioPause);
-	$('button.previous').click(audioPrevious);
+	$('button.stop').click(audioStop);
 	$('button.next').click(audioNext);
+	// keyboard shortcuts
+	$(document).keypress(function (e) {
+		var key = String.fromCharCode(e.charCode);
+		if (key == 'z') {
+			audioPrevious();
+		} else if (key == 'x') {
+			audioPlay();
+		} else if (key == 'c') {
+			audioPause();
+		} else if (key == 'v') {
+			audioStop();
+		} else if (key == 'b') {
+			audioNext();
+		}
+	});
 });
 
 function browser_bootstrap() {

@@ -25,6 +25,7 @@ app.get('/dir', function (req, res) {
 	var dirContents;
 	try {
 		dirContents = fs.readdirSync(realPath);
+		dirContents.sort();
 	} catch (Err) {
 		res.send('Unable to read path ' + realPath);
 		return;
