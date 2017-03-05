@@ -6,6 +6,7 @@
   "dependencies": {
     "express": "^4.14.1",
     "jquery": "^3.1.1",
+    "jquery.scrollintoview": "^1.9.4",
     "optimal-select": "^4.0.1"
   },
   "devDependencies": {},

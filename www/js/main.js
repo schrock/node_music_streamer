@@ -1,6 +1,15 @@
+var isPlaying = false;
+var playlistIndex = -1;
+
 $(document).ready(function () {
 	// get root browser contents
 	browser_bootstrap();
+	// hookup audio player buttons
+	$('button.stop').click(audioStop);
+	$('button.play').click(audioPlay);
+	$('button.pause').click(audioPause);
+	$('button.previous').click(audioPrevious);
+	$('button.next').click(audioNext);
 });
 
 function browser_bootstrap() {
@@ -51,10 +60,72 @@ function handleFiles(files) {
 	$('div.playlist').children().remove();
 	for (var file of files) {
 		$('div.playlist').append('<div>' + file.name + '</div>');
+		$('div.playlist').children().last().data('playUrl', file.playUrl);
 	}
-	$('div.playlist div').click(function () {
-		$('div.playlist div').removeClass('selected');
-		$(this).addClass('selected');
+	$('div.playlist div').dblclick(function () {
+		// stop current song
+		audioStop();
+		// update playlistIndex
+		playlistIndex = $(this).index();
+		// play song
+		audioPlay();
 		return false;
 	});
+}
+
+function audioStop() {
+	$('audio.player').get(0).pause();
+	$('audio.player').get(0).currentTime = 0;
+	isPlaying = false;
+}
+
+function audioPlay() {
+	audioStop();
+	// highlight in playlist
+	$('div.playlist div').removeClass('selected');
+	$('div.playlist div').eq(playlistIndex).addClass('selected');
+	$('div.playlist div').eq(playlistIndex).scrollintoview();
+	// load selected song
+	$('audio.player').children().remove();
+	$('audio.player').append('<source src="' + $('div.playlist div').eq(playlistIndex).data('playUrl') + '" type="audio/mpeg" />');
+	$('audio.player').get(0).load();
+	// start playback
+	$('audio.player').get(0).play();
+	isPlaying = true;
+}
+
+function audioPause() {
+	if (isPlaying) {
+		$('audio.player').get(0).pause();
+		isPlaying = false;
+	} else {
+		$('audio.player').get(0).play();
+		isPlaying = true;
+	}
+}
+
+function audioPrevious() {
+	audioStop();
+	if ($('div.playlist').children().length == 0) {
+		playlistIndex = -1;
+		return;
+	}
+	playlistIndex--;
+	if (playlistIndex < 0) {
+		playlistIndex = $('div.playlist').children().length - 1;
+	}
+	audioPlay();
+}
+
+function audioNext() {
+	audioStop();
+	if ($('div.playlist').children().length == 0) {
+		playlistIndex = -1;
+		return;
+	}
+	playlistIndex++;
+	if (playlistIndex > ($('div.playlist').children().length - 1)) {
+		playlistIndex = 0;
+	}
+	audioPlay();
 }

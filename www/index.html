@@ -1,18 +1,25 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<script src="node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="node_modules/jquery.scrollintoview/jquery.scrollintoview.js"></script>
+	<script src="node_modules/optimal-select/dist/optimal-select.min.js"></script>
+	<script src="js/main.js"></script>
 </head>
+
 <body>
-
-<script src="node_modules/jquery/dist/jquery.min.js"></script>
-<script src="node_modules/optimal-select/dist/optimal-select.min.js"></script>
-<script src="js/main.js"></script> 
-
-<div id="browser" class="browser"></div>
-<div id="playlist" class="playlist"></div>
-<div id="player" class="player"></div>
-<div id="details" class="details"></div>
-
+	<div class="browser"></div>
+	<div class="playlist"></div>
+	<div class="player">
+		<audio class="player"></audio>
+		<button class="previous">PREV</button>
+		<button class="play">PLAY</button>
+		<button class="pause">PAUSE</button>
+		<button class="stop">STOP</button>
+		<button class="next">NEXT</button>
+	</div>
 </body>
+
 </html>
