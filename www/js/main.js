@@ -1,5 +1,5 @@
 var isPlaying = false;
-var playlistIndex = -1;
+var playlistIndex = 0;
 
 $(document).ready(function () {
 	// get root browser contents
@@ -72,16 +72,22 @@ function handleDirs(parent, dirs) {
 }
 
 function handleFiles(files) {
-	$('div.playlist').children().remove();
+	$('table.playlist tr.data').remove();
 	for (var file of files) {
-		$('div.playlist').append('<div>' + file.name + '</div>');
-		$('div.playlist').children().last().data('playUrl', file.playUrl);
+		console.log(JSON.stringify(file, null, 4));
+		$('table.playlist').append('<tr class="data"></tr>');
+		$('table.playlist tr.data').last().append('<td></td>');
+		$('table.playlist tr.data').last().append('<td>' + file.name + '</td>');
+		$('table.playlist tr.data').last().append('<td></td>');
+		$('table.playlist tr.data').last().append('<td></td>');
+		$('table.playlist tr.data').last().append('<td></td>');
+		$('table.playlist tr.data').last().data('playUrl', file.playUrl);
 	}
-	$('div.playlist div').dblclick(function () {
+	$('table.playlist tr.data').dblclick(function () {
 		// stop current song
 		audioStop();
 		// update playlistIndex
-		playlistIndex = $(this).index();
+		playlistIndex = $(this).index() - 1;
 		// play song
 		audioPlay();
 		return false;
@@ -97,12 +103,12 @@ function audioStop() {
 function audioPlay() {
 	audioStop();
 	// highlight in playlist
-	$('div.playlist div').removeClass('selected');
-	$('div.playlist div').eq(playlistIndex).addClass('selected');
-	$('div.playlist div').eq(playlistIndex).scrollintoview();
+	$('table.playlist tr.data').removeClass('selected');
+	$('table.playlist tr.data').eq(playlistIndex).addClass('selected');
+	$('table.playlist tr.data').eq(playlistIndex).scrollintoview();
 	// load selected song
 	$('audio.player').children().remove();
-	$('audio.player').append('<source src="' + $('div.playlist div').eq(playlistIndex).data('playUrl') + '" type="audio/mpeg" />');
+	$('audio.player').append('<source src="' + $('table.playlist tr.data').eq(playlistIndex).data('playUrl') + '" type="audio/mpeg" />');
 	$('audio.player').get(0).load();
 	// start playback
 	$('audio.player').get(0).play();
@@ -121,25 +127,25 @@ function audioPause() {
 
 function audioPrevious() {
 	audioStop();
-	if ($('div.playlist').children().length == 0) {
-		playlistIndex = -1;
+	if ($('table.playlist tr.data').length == 0) {
+		playlistIndex = 0;
 		return;
 	}
 	playlistIndex--;
 	if (playlistIndex < 0) {
-		playlistIndex = $('div.playlist').children().length - 1;
+		playlistIndex = $('table.playlist tr.data').length - 1;
 	}
 	audioPlay();
 }
 
 function audioNext() {
 	audioStop();
-	if ($('div.playlist').children().length == 0) {
-		playlistIndex = -1;
+	if ($('table.playlist tr.data').length == 0) {
+		playlistIndex = 0;
 		return;
 	}
 	playlistIndex++;
-	if (playlistIndex > ($('div.playlist').children().length - 1)) {
+	if (playlistIndex > ($('table.playlist tr.data').length - 1)) {
 		playlistIndex = 0;
 	}
 	audioPlay();

@@ -38,14 +38,14 @@ app.get('/dir', function (req, res) {
 		var stat = fs.statSync(realPath);
 		if (stat.isDirectory()) {
 			var dirUrl = req.protocol + '://' + req.hostname + ':' + req.socket.localPort + '/dir?path=' + queryPath + '/' + fileName;
-			dirEntries.push(new Directory(fileName, filePath, dirUrl));
+			dirEntries.push(new Directory(fileName, realPath, dirUrl));
 		} else if (stat.isFile()) {
 			var extIndex = fileName.lastIndexOf('.');
 			if (extIndex > 0) {
 				var ext = fileName.substring(extIndex + 1);
 				if (config.extensions.indexOf(ext) > -1) {
 					var playUrl = req.protocol + '://' + req.hostname + ':' + req.socket.localPort + '/play?path=' + queryPath + '/' + fileName;
-					dirEntries.push(new MediaFile(fileName, filePath, playUrl));
+					dirEntries.push(new MediaFile(fileName, realPath, playUrl));
 				}
 			}
 		}

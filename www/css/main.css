@@ -35,6 +35,6 @@ div.player {
 	overflow: auto;
 }
 
-div.selected {
+tr.selected {
 	background-color: lightgray;
 }
