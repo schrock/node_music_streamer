@@ -76,11 +76,11 @@ function handleFiles(files) {
 	for (var file of files) {
 		console.log(JSON.stringify(file, null, 4));
 		$('table.playlist').append('<tr class="data"></tr>');
-		$('table.playlist tr.data').last().append('<td></td>');
-		$('table.playlist tr.data').last().append('<td>' + file.name + '</td>');
-		$('table.playlist tr.data').last().append('<td></td>');
-		$('table.playlist tr.data').last().append('<td></td>');
-		$('table.playlist tr.data').last().append('<td></td>');
+		$('table.playlist tr.data').last().append('<td>' + file.trackNum + '</td>');
+		$('table.playlist tr.data').last().append('<td>' + file.title + '</td>');
+		$('table.playlist tr.data').last().append('<td>' + file.artist + '</td>');
+		$('table.playlist tr.data').last().append('<td>' + file.album + '</td>');
+		$('table.playlist tr.data').last().append('<td>' + file.duration + '</td>');
 		$('table.playlist tr.data').last().data('playUrl', file.playUrl);
 	}
 	$('table.playlist tr.data').dblclick(function () {

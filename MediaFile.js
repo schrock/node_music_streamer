@@ -1,22 +1,28 @@
 const DirEntry = require('./DirEntry.js');
-const sync = require('synchronize')
+const deasync = require('deasync');
 const fs = require('fs');
-const util = require('util');
 const mm = require('music-metadata');
+const parseStream = deasync(mm.parseStream);
 
 module.exports = class MediaFile extends DirEntry {
 
 	constructor(name, path, playUrl) {
 		super('file', name, path);
 		this.playUrl = playUrl;
-
-		sync(mm, 'parseStream');
-		sync.fiber(function () {
-			var stream = fs.createReadStream(path);
-			var metadata = sync.await(mm.parseStream(stream, { native: true }));
+		// parse tag metadata
+		var stream = fs.createReadStream(path);
+		var metadata = null;
+		try {
+			metadata = parseStream(stream, { native: true });
+			//console.log(metadata);
+			this.trackNum = metadata.common.track.no;
+			this.title = metadata.common.title;
+			this.artist = metadata.common.artist;
+			this.album = metadata.common.album;
+			this.duration = metadata.format.duration;
+		} finally {
 			stream.close();
-			console.log(metadata);
-		});
+		}
 	}
 
 }

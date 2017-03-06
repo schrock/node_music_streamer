@@ -4,12 +4,12 @@
   "description": "Node.js server and web app providing browser-based access to a remote music library",
   "main": "index.js",
   "dependencies": {
+    "deasync": "^0.1.9",
     "express": "^4.14.1",
     "jquery": "^3.1.1",
     "jquery.scrollintoview": "^1.9.4",
     "music-metadata": "^0.6.1",
-    "optimal-select": "^4.0.1",
-    "synchronize": "^2.0.0"
+    "optimal-select": "^4.0.1"
   },
   "devDependencies": {},
   "scripts": {
