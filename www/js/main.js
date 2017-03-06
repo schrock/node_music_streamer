@@ -72,9 +72,12 @@ function handleDirs(parent, dirs) {
 }
 
 function handleFiles(files) {
+	// reset playlistIndex
+	playlistIndex = 0;
+	
 	$('table.playlist tr.data').remove();
 	for (var file of files) {
-		console.log(JSON.stringify(file, null, 4));
+		//console.log(JSON.stringify(file, null, 4));
 		$('table.playlist').append('<tr class="data"></tr>');
 		$('table.playlist tr.data').last().append('<td>' + file.trackNum + '</td>');
 		$('table.playlist tr.data').last().append('<td>' + file.title + '</td>');

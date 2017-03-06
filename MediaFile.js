@@ -19,7 +19,13 @@ module.exports = class MediaFile extends DirEntry {
 			this.title = metadata.common.title;
 			this.artist = metadata.common.artist;
 			this.album = metadata.common.album;
-			this.duration = metadata.format.duration;
+			this.durationSeconds = metadata.format.duration;
+			var minutes = Math.trunc(this.durationSeconds / 60);
+			var seconds = this.durationSeconds % 60;
+			if (seconds < 10) {
+				seconds = '0' + seconds;
+			}
+			this.duration = minutes + ':' + seconds;
 		} finally {
 			stream.close();
 		}
