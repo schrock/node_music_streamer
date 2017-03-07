@@ -16,12 +16,24 @@ module.exports = class MediaFile extends DirEntry {
 			metadata = parseStream(stream, { native: true });
 			//console.log(metadata);
 			this.trackNum = metadata.common.track.no;
+			if (this.trackNum == null) {
+				this.trackNum = '';
+			}
 			this.title = metadata.common.title;
+			if (this.title == null) {
+				this.title = name;
+			}
 			this.artist = metadata.common.artist;
+			if (this.artist == null) {
+				this.artist = '';
+			}
 			this.album = metadata.common.album;
+			if (this.album == null) {
+				this.album = '';
+			}
 			this.durationSeconds = metadata.format.duration;
 			var minutes = Math.trunc(this.durationSeconds / 60);
-			var seconds = this.durationSeconds % 60;
+			var seconds = Math.round(this.durationSeconds % 60);
 			if (seconds < 10) {
 				seconds = '0' + seconds;
 			}
