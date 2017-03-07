@@ -4,6 +4,12 @@ var playlistIndex = 0;
 $(document).ready(function () {
 	// get root browser contents
 	browser_bootstrap();
+	// hookup progress bar
+	$('audio.player').on('timeupdate', function () {
+		var currentTime = $('audio.player').get(0).currentTime;
+		var duration = $('audio.player').get(0).duration;
+		$('div.progress').stop(true, true).animate({ 'width': (currentTime + .25) / duration * 100 + '%' }, 250, 'linear');
+	});
 	// hookup audio player buttons
 	$('button.previous').click(audioPrevious);
 	$('button.play').click(audioPlay);
@@ -14,15 +20,15 @@ $(document).ready(function () {
 	$(document).keypress(function (e) {
 		var key = String.fromCharCode(e.charCode);
 		if (key == 'z') {
-			audioPrevious();
+			$('button.previous').click();
 		} else if (key == 'x') {
-			audioPlay();
+			$('button.play').click();
 		} else if (key == 'c') {
-			audioPause();
+			$('button.pause').click();
 		} else if (key == 'v') {
-			audioStop();
+			$('button.stop').click();
 		} else if (key == 'b') {
-			audioNext();
+			$('button.next').click();
 		}
 	});
 });
@@ -74,7 +80,7 @@ function handleDirs(parent, dirs) {
 function handleFiles(files) {
 	// reset playlistIndex
 	playlistIndex = 0;
-	
+
 	$('table.playlist tr.data').remove();
 	for (var file of files) {
 		//console.log(JSON.stringify(file, null, 4));
@@ -100,6 +106,8 @@ function handleFiles(files) {
 function audioStop() {
 	$('audio.player').get(0).pause();
 	$('audio.player').get(0).currentTime = 0;
+	$('div.progress').stop(true, true);
+	$('div.progress').width('0px');
 	isPlaying = false;
 }
 
