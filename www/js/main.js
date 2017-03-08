@@ -10,6 +10,21 @@ $(document).ready(function () {
 		var duration = $('audio.player').get(0).duration;
 		$('div.progress').stop(true, true).animate({ 'width': (currentTime + .25) / duration * 100 + '%' }, 250, 'linear');
 	});
+	$('div.progress_range').click(function (e) {
+		var duration = $('audio.player').get(0).duration;
+		if (duration > 0) {
+			var selectedX = e.pageX - $(this).offset().left;
+			var maxX = $(this).width();
+			var targetTimeFraction = selectedX / maxX;
+			var targetTime = duration * targetTimeFraction;
+			$('audio.player').get(0).currentTime = targetTime;
+		}
+		return false;
+	});
+	// automatic track change at end of current song
+	$('audio.player').on('ended', function () {
+		audioNext();
+	});
 	// hookup audio player buttons
 	$('button.previous').click(audioPrevious);
 	$('button.play').click(audioPlay);
