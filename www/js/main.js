@@ -9,6 +9,8 @@ $(document).ready(function () {
 		var currentTime = $('audio.player').get(0).currentTime;
 		var duration = $('audio.player').get(0).duration;
 		$('div.progress').stop(true, true).animate({ 'width': (currentTime + .25) / duration * 100 + '%' }, 250, 'linear');
+		// update time display
+		$('span.time').html(stringifyTime(currentTime) + ' / ' + stringifyTime(duration));
 	});
 	$('div.progress_range').click(function (e) {
 		var duration = $('audio.player').get(0).duration;
@@ -47,6 +49,15 @@ $(document).ready(function () {
 		}
 	});
 });
+
+function stringifyTime(time) {
+	var minutes = Math.trunc(time / 60);
+	var seconds = Math.round(time % 60);
+	if (seconds < 10) {
+		seconds = '0' + seconds;
+	}
+	return minutes + ':' + seconds;
+}
 
 function browser_bootstrap() {
 	$.get('/dir?path=', function (data, status) {

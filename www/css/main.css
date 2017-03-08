@@ -20,24 +20,20 @@ div.browser {
 }
 
 div.playlist {
-	outline: 2px solid black;
-	outline-offset: -2px;
 	position: absolute;
 	left: 20%;
 	bottom: 0px;
 	width: 80%;
-	height: 80%;
+	height: 90%;
 	overflow: auto;
 }
 
 div.player {
-	outline: 2px solid black;
-	outline-offset: -2px;
 	position: absolute;
 	left: 20%;
 	top: 0px;
 	width: 80%;
-	height: 20%;
+	height: 10%;
 	overflow: auto;
 }
 
@@ -52,6 +48,11 @@ div.progress {
 	height: 25px;
 	width: 0px;
 	background-color: gray;
+}
+
+span.time {
+	float: right;
+	padding-right: 5px;
 }
 
 table {
