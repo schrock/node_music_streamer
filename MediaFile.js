@@ -31,13 +31,8 @@ module.exports = class MediaFile extends DirEntry {
 			if (this.album == null) {
 				this.album = '';
 			}
-			this.durationSeconds = metadata.format.duration;
-			var minutes = Math.trunc(this.durationSeconds / 60);
-			var seconds = Math.round(this.durationSeconds % 60);
-			if (seconds < 10) {
-				seconds = '0' + seconds;
-			}
-			this.duration = minutes + ':' + seconds;
+			this.duration = metadata.format.duration;
+			this.playUrl += '&duration=' + this.duration;
 		} finally {
 			stream.close();
 		}

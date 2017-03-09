@@ -7,12 +7,16 @@ $(document).ready(function () {
 	// hookup progress bar
 	$('audio.player').on('timeupdate', function () {
 		var currentTime = $('audio.player').get(0).currentTime;
+		//var fileData = $('table.playlist tr.data').eq(playlistIndex).data('file');
+		//var duration = fileData.duration;
 		var duration = $('audio.player').get(0).duration;
 		$('div.progress').stop(true, true).animate({ 'width': (currentTime + .25) / duration * 100 + '%' }, 250, 'linear');
 		// update time display
 		$('span.time').html(stringifyTime(currentTime) + ' / ' + stringifyTime(duration));
 	});
 	$('div.progress_range').click(function (e) {
+		//var fileData = $('table.playlist tr.data').eq(playlistIndex).data('file');
+		//var duration = fileData.duration;
 		var duration = $('audio.player').get(0).duration;
 		if (duration > 0) {
 			var selectedX = e.pageX - $(this).offset().left;
@@ -115,7 +119,7 @@ function handleFiles(files) {
 		$('table.playlist tr.data').last().append('<td>' + file.title + '</td>');
 		$('table.playlist tr.data').last().append('<td>' + file.artist + '</td>');
 		$('table.playlist tr.data').last().append('<td>' + file.album + '</td>');
-		$('table.playlist tr.data').last().append('<td>' + file.duration + '</td>');
+		$('table.playlist tr.data').last().append('<td>' + stringifyTime(file.duration) + '</td>');
 		$('table.playlist tr.data').last().data('file', file);
 	}
 	$('table.playlist tr.data').dblclick(function () {

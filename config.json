@@ -1,5 +1,4 @@
 {
-	"baseDir" : "x:/music",
-	"extensions" : ["mp3"]
+	"baseDir" : "/Users/schrock/Music",
+	"extensions" : ["mp3", "flac", "ogg", "spc"]
 }
-

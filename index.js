@@ -5,6 +5,7 @@ var config = require('./config.json');
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const ffmpeg = require('fluent-ffmpeg');
 
 // classes
 const DirEntry = require('./DirEntry.js');
@@ -57,10 +58,33 @@ app.get('/dir', function (req, res) {
 app.get('/play', function (req, res) {
 	var queryPath = req.query.path;
 	var realPath = config.baseDir + '/' + queryPath;
-
-	res.setHeader('Content-Type', 'audio/mpeg');
-	res.setHeader('Content-Length', fs.statSync(realPath).size);
-	fs.createReadStream(realPath).pipe(res);
+	var extIndex = realPath.lastIndexOf('.');
+	var ext = null;
+	if (extIndex > 0) {
+		ext = realPath.substring(extIndex + 1);
+	}
+	if (ext == null || ext == 'mp3') {
+		// read file directly and send as is
+		res.setHeader('Content-Type', 'audio/mpeg');
+		res.setHeader('Content-Length', fs.statSync(realPath).size);
+		fs.createReadStream(realPath).pipe(res);
+	} else {
+		// convert to mp3 using ffmpeg
+		res.setHeader('Content-Type', 'audio/mpeg');
+		res.setHeader('Content-Length', req.query.duration * 256 * 1000 / 8);
+		var command = ffmpeg(realPath).audioCodec('libmp3lame').audioChannels(2)
+			.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo()
+			.on('start', function () {
+				console.log('Processing started:  ' + realPath);
+			})
+			.on('error', function (err) {
+				console.log('Processing error:    ' + realPath + ' : ' + err.message);
+			})
+			.on('end', function () {
+				console.log('Processing finished: ' + realPath);
+			})
+			.pipe(res, { end: true });
+	}
 });
 
 // serve client-side web app
