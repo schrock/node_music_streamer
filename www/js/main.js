@@ -116,7 +116,7 @@ function handleFiles(files) {
 		$('table.playlist tr.data').last().append('<td>' + file.artist + '</td>');
 		$('table.playlist tr.data').last().append('<td>' + file.album + '</td>');
 		$('table.playlist tr.data').last().append('<td>' + file.duration + '</td>');
-		$('table.playlist tr.data').last().data('playUrl', file.playUrl);
+		$('table.playlist tr.data').last().data('file', file);
 	}
 	$('table.playlist tr.data').dblclick(function () {
 		// stop current song
@@ -139,13 +139,16 @@ function audioStop() {
 
 function audioPlay() {
 	audioStop();
+	var fileData = $('table.playlist tr.data').eq(playlistIndex).data('file');
 	// highlight in playlist
 	$('table.playlist tr.data').removeClass('selected');
 	$('table.playlist tr.data').eq(playlistIndex).addClass('selected');
 	$('table.playlist tr.data').eq(playlistIndex).scrollintoview();
+	// change current song label
+	$('span.currentSong').html(fileData.title);
 	// load selected song
 	$('audio.player').children().remove();
-	$('audio.player').append('<source src="' + $('table.playlist tr.data').eq(playlistIndex).data('playUrl') + '" type="audio/mpeg" />');
+	$('audio.player').append('<source src="' + fileData.playUrl + '" type="audio/mpeg" />');
 	$('audio.player').get(0).load();
 	// start playback
 	$('audio.player').get(0).play();
