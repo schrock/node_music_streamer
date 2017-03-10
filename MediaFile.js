@@ -1,8 +1,8 @@
 const DirEntry = require('./DirEntry.js');
 const deasync = require('deasync');
 const fs = require('fs');
-const mm = require('music-metadata');
-const parseStream = deasync(mm.parseStream);
+const ffmpeg = require('fluent-ffmpeg');
+const ffprobe = deasync(ffmpeg.ffprobe);
 
 module.exports = class MediaFile extends DirEntry {
 
@@ -10,31 +10,33 @@ module.exports = class MediaFile extends DirEntry {
 		super('file', name, path);
 		this.playUrl = playUrl;
 		// parse tag metadata
-		var stream = fs.createReadStream(path);
 		var metadata = null;
 		try {
-			metadata = parseStream(stream, { native: true });
+			metadata = ffprobe(path);
 			//console.log(metadata);
-			this.trackNum = metadata.common.track.no;
+			this.trackNum = metadata.format.tags.track;
 			if (this.trackNum == null) {
 				this.trackNum = '';
 			}
-			this.title = metadata.common.title;
+			this.title = metadata.format.tags.title;
 			if (this.title == null) {
 				this.title = name;
 			}
-			this.artist = metadata.common.artist;
+			this.artist = metadata.format.tags.artist;
 			if (this.artist == null) {
 				this.artist = '';
 			}
-			this.album = metadata.common.album;
+			this.album = metadata.format.tags.album;
 			if (this.album == null) {
 				this.album = '';
 			}
 			this.duration = metadata.format.duration;
+			if (this.duration == null || typeof this.duration != 'number') {
+				this.duration = 1800;
+			}
 			this.playUrl += '&duration=' + this.duration;
-		} finally {
-			stream.close();
+		} catch (err) {
+			console.log('Error while reading metadata for ' + path + '\n' + err);
 		}
 	}
 

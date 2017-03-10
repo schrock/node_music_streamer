@@ -73,15 +73,17 @@ app.get('/play', function (req, res) {
 		res.setHeader('Content-Type', 'audio/mpeg');
 		res.setHeader('Content-Length', req.query.duration * 256 * 1000 / 8);
 		var command = ffmpeg(realPath).audioCodec('libmp3lame').audioChannels(2)
-			.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo()
+			.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo().duration(req.query.duration)
 			.on('start', function () {
-				console.log('Processing started:  ' + realPath);
+				//console.log('Processing started:  ' + realPath);
 			})
 			.on('error', function (err) {
-				console.log('Processing error:    ' + realPath + ' : ' + err.message);
+				if (!err.toString().includes('Output stream closed')) {
+					console.log('Processing error:    ' + realPath + ' : ' + err.message);
+				}
 			})
 			.on('end', function () {
-				console.log('Processing finished: ' + realPath);
+				//console.log('Processing finished: ' + realPath);
 			})
 			.pipe(res, { end: true });
 	}

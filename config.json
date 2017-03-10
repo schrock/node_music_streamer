@@ -1,4 +1,19 @@
 {
-	"baseDir" : "/Users/schrock/Music",
-	"extensions" : ["mp3", "flac", "ogg", "spc"]
+	"baseDir": "x:/music",
+	"extensions": [
+		"mp3",
+		"flac",
+		"ogg",
+		"ay",
+		"gbs",
+		"gym",
+		"hes",
+		"kss",
+		"nsf",
+		"nsfe",
+		"sap",
+		"spc",
+		"vgm",
+		"vgz"
+	]
 }
