@@ -1,5 +1,6 @@
 var isPlaying = false;
 var playlistIndex = 0;
+var fileData = null;
 
 $(document).ready(function () {
 	// get root browser contents
@@ -12,7 +13,7 @@ $(document).ready(function () {
 		var duration = $('audio.player').get(0).duration;
 		$('div.progress').stop(true, true).animate({ 'width': (currentTime + .25) / duration * 100 + '%' }, 250, 'linear');
 		// update time display
-		$('span.time').html(stringifyTime(currentTime) + ' / ' + stringifyTime(duration));
+		$('span.time').html(fileData.format + ' ' + stringifyTime(currentTime) + ' / ' + stringifyTime(duration));
 	});
 	$('div.progress_range').click(function (e) {
 		//var fileData = $('table.playlist tr.data').eq(playlistIndex).data('file');
@@ -115,7 +116,7 @@ function handleFiles(files) {
 	for (var file of files) {
 		//console.log(JSON.stringify(file, null, 4));
 		$('table.playlist').append('<tr class="data"></tr>');
-		$('table.playlist tr.data').last().append('<td>' + file.trackNum + '</td>');
+		$('table.playlist tr.data').last().append('<td>' + file.track + '</td>');
 		$('table.playlist tr.data').last().append('<td>' + file.title + '</td>');
 		$('table.playlist tr.data').last().append('<td>' + file.artist + '</td>');
 		$('table.playlist tr.data').last().append('<td>' + file.album + '</td>');
@@ -143,7 +144,7 @@ function audioStop() {
 
 function audioPlay() {
 	audioStop();
-	var fileData = $('table.playlist tr.data').eq(playlistIndex).data('file');
+	fileData = $('table.playlist tr.data').eq(playlistIndex).data('file');
 	// highlight in playlist
 	$('table.playlist tr.data').removeClass('selected');
 	$('table.playlist tr.data').eq(playlistIndex).addClass('selected');
