@@ -56,6 +56,19 @@ app.get('/dir', function (req, res) {
 });
 
 app.get('/play', function (req, res) {
+	res.header('Accept-Ranges', 'bytes');
+	res.setHeader('Content-Type', 'audio/mpeg');
+
+	var range = req.headers.range;
+	if (range == null) {
+		range = 'bytes=0-';
+	}
+	// console.log('range: ' + range);
+	var equalsIndex = range.indexOf('=');
+	var dashIndex = range.indexOf('-');
+	var startByte = Number(range.substring(equalsIndex + 1, dashIndex));
+	var endByte = range.substring(dashIndex + 1);
+
 	var queryPath = req.query.path;
 	var realPath = config.baseDir + '/' + queryPath;
 	var extIndex = realPath.lastIndexOf('.');
@@ -65,15 +78,44 @@ app.get('/play', function (req, res) {
 	}
 	if (ext == null || ext == 'mp3') {
 		// read file directly and send as is
-		res.setHeader('Content-Type', 'audio/mpeg');
-		res.setHeader('Content-Length', fs.statSync(realPath).size);
-		fs.createReadStream(realPath).pipe(res);
+		var fileSize = fs.statSync(realPath).size;
+		if (endByte.length == 0) {
+			endByte = fileSize - 1;
+		} else {
+			endByte = Number(endByte);
+		}
+		// console.log('startByte: ' + startByte);
+		// console.log('endByte:   ' + endByte);
+		res.setHeader('Content-Range', 'bytes ' + startByte + '-' + endByte + '/' + fileSize);
+		res.setHeader('Content-Length', endByte - startByte + 1);
+		res.status(206);
+		fs.createReadStream(realPath, { start: startByte, end: endByte }).pipe(res);
 	} else {
 		// convert to mp3 using ffmpeg
-		res.setHeader('Content-Type', 'audio/mpeg');
-		res.setHeader('Content-Length', req.query.duration * 256 * 1000 / 8);
+		var duration = req.query.duration;
+		var fileSize = Math.floor(duration * (256 * 1000 / 8));
+		if (endByte.length == 0) {
+			endByte = fileSize - 1;
+		} else {
+			endByte = Number(endByte);
+		}
+		// console.log('startByte: ' + startByte);
+		// console.log('endByte:   ' + endByte);
+		res.setHeader('Content-Range', 'bytes ' + startByte + '-' + endByte + '/' + fileSize);
+		res.setHeader('Content-Length', endByte - startByte + 1);
+		res.status(206);
+
+		var startTime = 0;
+		if (startByte > 0) {
+			startTime = startByte / (256 * 1000 / 8);
+		}
+		var endTime = endByte / (256 * 1000 / 8);
+		// console.log('startTime: ' + startTime);
+		// console.log('endTime:   ' + endTime);
+
 		var command = ffmpeg(realPath).audioCodec('libmp3lame').audioChannels(2)
-			.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo().duration(req.query.duration)
+			.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo()
+			.seek(startTime).duration(endTime - startTime)
 			.on('start', function () {
 				//console.log('Processing started:  ' + realPath);
 			})
