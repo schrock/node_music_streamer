@@ -128,6 +128,12 @@ app.get('/play', function (req, res) {
 				//console.log('Processing finished: ' + realPath);
 			})
 			.pipe(res, { end: true });
+
+		// kill ffmpeg after 10 minutes just in case
+		setTimeout(function () {
+			command.kill();
+			console.log('ffmpeg process reached timeout and was killed.');
+		}, 600000);
 	}
 });
 
