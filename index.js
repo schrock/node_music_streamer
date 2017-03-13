@@ -131,7 +131,7 @@ app.get('/play', function (req, res) {
 
 		// kill ffmpeg after 10 minutes just in case
 		setTimeout(function () {
-			command.kill();
+			command.kill('SIGKILL');
 			console.log('ffmpeg process reached timeout and was killed.');
 		}, 600000);
 	}
