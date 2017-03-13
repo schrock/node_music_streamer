@@ -30,7 +30,7 @@ module.exports = class MediaFile extends DirEntry {
 					this.track = tags.TRACK;
 				}
 				var slashIndex = this.track.indexOf('/');
-				if(slashIndex > 0){
+				if (slashIndex > 0) {
 					this.track = this.track.substring(0, slashIndex);
 				}
 				// title
@@ -64,7 +64,7 @@ module.exports = class MediaFile extends DirEntry {
 					this.album = tags.game;
 				}
 				// duration
-				if (metadata.format.duration != null) {
+				if (metadata.format.duration != null && typeof metadata.format.duration == 'number') {
 					this.duration = metadata.format.duration;
 				}
 			}
