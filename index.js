@@ -117,7 +117,6 @@ app.get('/play', function (req, res) {
 			.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo()
 			.seek(startTime).duration(endTime - startTime)
 			.on('start', function () {
-				console.log('pid: ' + command.ffmpegProc.pid);
 				//console.log('Processing started:  ' + realPath);
 			})
 			.on('error', function (err) {
@@ -132,8 +131,12 @@ app.get('/play', function (req, res) {
 
 		// kill ffmpeg after 10 minutes just in case
 		setTimeout(function () {
-			command.kill('SIGKILL');
-			console.log('ffmpeg process reached timeout and was killed.');
+			try {
+				command.kill('SIGKILL');
+				console.log('ffmpeg process reached timeout and was killed.');
+			} catch (err) {
+				console.log('failed to kill fmpeg process: ' + err);
+			}
 		}, 600000);
 	}
 });
