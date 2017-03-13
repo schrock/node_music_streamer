@@ -15,11 +15,11 @@ module.exports = class MediaFile extends DirEntry {
 		this.title = name;
 		this.artist = '';
 		this.album = '';
-		this.duration = null;
+		this.duration = 1200;
 		try {
 			var metadata = ffprobe(path);
 			// console.log(metadata);
-			this.format= metadata.format.format_name;
+			this.format = metadata.format.format_name;
 			var tags = metadata.format.tags;
 			if (tags != null) {
 				// track
@@ -28,6 +28,10 @@ module.exports = class MediaFile extends DirEntry {
 				}
 				if (tags.TRACK != null) {
 					this.track = tags.TRACK;
+				}
+				var slashIndex = this.track.indexOf('/');
+				if(slashIndex > 0){
+					this.track = this.track.substring(0, slashIndex);
 				}
 				// title
 				if (tags.title != null) {
@@ -59,10 +63,10 @@ module.exports = class MediaFile extends DirEntry {
 				if (tags.game != null) {
 					this.album = tags.game;
 				}
-			}
-			this.duration = metadata.format.duration;
-			if (this.duration == null || typeof this.duration != 'number') {
-				this.duration = 1800;
+				// duration
+				if (metadata.format.duration != null) {
+					this.duration = metadata.format.duration;
+				}
 			}
 			this.playUrl += '&duration=' + this.duration;
 		} catch (err) {
