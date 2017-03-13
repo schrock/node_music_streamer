@@ -1,5 +1,5 @@
 {
-	"baseDir": "x:/music",
+	"baseDir": "e:/music",
 	"extensions": [
 		"mp3",
 		"flac",
@@ -13,7 +13,6 @@
 		"nsfe",
 		"sap",
 		"spc",
-		"vgm",
-		"vgz"
+		"vgm"
 	]
 }
