@@ -117,6 +117,7 @@ app.get('/play', function (req, res) {
 			.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo()
 			.seek(startTime).duration(endTime - startTime)
 			.on('start', function () {
+				console.log('pid: ' + command.pid);
 				//console.log('Processing started:  ' + realPath);
 			})
 			.on('error', function (err) {
