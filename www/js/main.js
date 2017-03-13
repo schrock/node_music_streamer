@@ -56,8 +56,8 @@ $(document).ready(function () {
 });
 
 function stringifyTime(time) {
-	var minutes = Math.trunc(time / 60);
-	var seconds = Math.round(time % 60);
+	var minutes = Math.floor(time / 60);
+	var seconds = Math.floor(time % 60);
 	if (seconds < 10) {
 		seconds = '0' + seconds;
 	}
