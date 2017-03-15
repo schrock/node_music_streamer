@@ -25,7 +25,7 @@ module.exports = class MediaFile extends DirEntry {
 			if (tags != null) {
 				// tracks
 				if (tags.tracks != null) {
-					tracks = tags.tracks;
+					tracks = Number(tags.tracks);
 				}
 				// track
 				if (tags.track != null) {
@@ -83,7 +83,7 @@ module.exports = class MediaFile extends DirEntry {
 			var details = {};
 			details.playUrl = playUrl + '&track_index=' + i;
 			details.format = format;
-			if (track == '') {
+			if (tracks > 1) {
 				details.track = i + 1;
 			} else {
 				details.track = track;
