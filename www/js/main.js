@@ -114,14 +114,16 @@ function handleFiles(files) {
 
 	$('table.playlist tr.data').remove();
 	for (var file of files) {
-		//console.log(JSON.stringify(file, null, 4));
-		$('table.playlist').append('<tr class="data"></tr>');
-		$('table.playlist tr.data').last().append('<td>' + file.track + '</td>');
-		$('table.playlist tr.data').last().append('<td>' + file.title + '</td>');
-		$('table.playlist tr.data').last().append('<td>' + file.artist + '</td>');
-		$('table.playlist tr.data').last().append('<td>' + file.album + '</td>');
-		$('table.playlist tr.data').last().append('<td>' + stringifyTime(file.duration) + '</td>');
-		$('table.playlist tr.data').last().data('file', file);
+		for (var track of file.tracks) {
+			//console.log(JSON.stringify(file, null, 4));
+			$('table.playlist').append('<tr class="data"></tr>');
+			$('table.playlist tr.data').last().append('<td>' + track.track + '</td>');
+			$('table.playlist tr.data').last().append('<td>' + track.title + '</td>');
+			$('table.playlist tr.data').last().append('<td>' + track.artist + '</td>');
+			$('table.playlist tr.data').last().append('<td>' + track.album + '</td>');
+			$('table.playlist tr.data').last().append('<td>' + stringifyTime(track.duration) + '</td>');
+			$('table.playlist tr.data').last().data('file', track);
+		}
 	}
 	$('table.playlist tr.data').dblclick(function () {
 		// stop current song

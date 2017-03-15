@@ -8,69 +8,91 @@ module.exports = class MediaFile extends DirEntry {
 
 	constructor(name, path, playUrl) {
 		super('file', name, path);
-		this.playUrl = playUrl;
+		var playUrl = playUrl;
 		// parse tag metadata
-		this.format = '';
-		this.track = '';
-		this.title = name;
-		this.artist = '';
-		this.album = '';
-		this.duration = 1200;
+		var format = '';
+		var tracks = 1;
+		var track = '';
+		var title = name;
+		var artist = '';
+		var album = '';
+		var duration = 1200;
 		try {
 			var metadata = ffprobe(path);
 			// console.log(metadata);
-			this.format = metadata.format.format_name;
+			format = metadata.format.format_name;
 			var tags = metadata.format.tags;
 			if (tags != null) {
+				// tracks
+				if (tags.tracks != null) {
+					tracks = tags.tracks;
+				}
 				// track
 				if (tags.track != null) {
-					this.track = tags.track;
+					track = tags.track;
 				}
 				if (tags.TRACK != null) {
-					this.track = tags.TRACK;
+					track = tags.TRACK;
 				}
-				var slashIndex = this.track.indexOf('/');
+				var slashIndex = track.indexOf('/');
 				if (slashIndex > 0) {
-					this.track = this.track.substring(0, slashIndex);
+					track = track.substring(0, slashIndex);
 				}
 				// title
 				if (tags.title != null) {
-					this.title = tags.title;
+					title = tags.title;
 				}
 				if (tags.TITLE != null) {
-					this.title = tags.TITLE;
+					title = tags.TITLE;
 				}
 				if (tags.song != null) {
-					this.title = tags.song;
+					title = tags.song;
 				}
 				// artist
 				if (tags.artist != null) {
-					this.artist = tags.artist;
+					artist = tags.artist;
 				}
 				if (tags.ARTIST != null) {
-					this.artist = tags.ARTIST;
+					artist = tags.ARTIST;
 				}
 				if (tags.author != null) {
-					this.artist = tags.author;
+					artist = tags.author;
 				}
 				// album
 				if (tags.album != null) {
-					this.album = tags.album;
+					album = tags.album;
 				}
 				if (tags.ALBUM != null) {
-					this.album = tags.ALBUM;
+					album = tags.ALBUM;
 				}
 				if (tags.game != null) {
-					this.album = tags.game;
+					album = tags.game;
 				}
 				// duration
 				if (metadata.format.duration != null && typeof metadata.format.duration == 'number') {
-					this.duration = metadata.format.duration;
+					duration = metadata.format.duration;
 				}
 			}
-			this.playUrl += '&duration=' + this.duration;
+			playUrl += '&duration=' + duration;
 		} catch (err) {
 			console.log('Error while reading metadata for ' + path + '\n' + err);
+		}
+
+		this.tracks = [];
+		for (var i = 0; i < tracks; i++) {
+			var details = {};
+			details.playUrl = playUrl + '&track_index=' + i;
+			details.format = format;
+			if (track == '') {
+				details.track = i + 1;
+			} else {
+				details.track = track;
+			}
+			details.title = title;
+			details.artist = artist;
+			details.album = album;
+			details.duration = duration;
+			this.tracks.push(details);
 		}
 	}
 

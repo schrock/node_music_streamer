@@ -92,6 +92,8 @@ app.get('/play', function (req, res) {
 		fs.createReadStream(realPath, { start: startByte, end: endByte }).pipe(res);
 	} else {
 		// convert to mp3 using ffmpeg
+		var track_index = Number(req.query.track_index);
+
 		var duration = req.query.duration;
 		var fileSize = Math.floor(duration * (256 * 1000 / 8));
 		if (endByte.length == 0) {
@@ -113,7 +115,11 @@ app.get('/play', function (req, res) {
 		// console.log('startTime: ' + startTime);
 		// console.log('endTime:   ' + endTime);
 
-		var command = ffmpeg(realPath).audioCodec('libmp3lame').audioChannels(2)
+		var command = ffmpeg(realPath);
+		if (track_index > 0) {
+			command.inputOptions('-track_index ' + track_index);
+		}
+		command.audioCodec('libmp3lame').audioChannels(2)
 			.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo()
 			.seek(startTime).duration(endTime - startTime)
 			.on('start', function () {
