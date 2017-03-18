@@ -14,7 +14,7 @@ const Directory = require('./Directory.js');
 const MediaFile = require('./MediaFile.js');
 
 // whitelist certain ip addresses
-var ips = ['127.0.0.1', '::1', ['192.168.1.2', '192.168.1.255'], ['128.149.0.0', '128.149.255.255'], ['137.79.0.0', '137.79.255.255']];
+var ips = ['127.0.0.1', '::1', ['192.168.1.1', '192.168.1.255'], ['128.149.0.0', '128.149.255.255'], ['137.79.0.0', '137.79.255.255']];
 app.use(ipfilter(ips, { mode: 'allow', logLevel: 'deny' }));
 
 app.get('/hello', function (req, res) {
