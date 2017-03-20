@@ -13,7 +13,7 @@ $(document).ready(function () {
 		var duration = $('audio.player').get(0).duration;
 		$('div.progress').stop(true, true).animate({ 'width': (currentTime + .25) / duration * 100 + '%' }, 250, 'linear');
 		// update time display
-		$('span.time').html(fileData.format + ' ' + stringifyTime(currentTime) + ' / ' + stringifyTime(duration));
+		$('span.time').html(fileData.format + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + stringifyTime(currentTime) + ' / ' + stringifyTime(duration));
 	});
 	$('div.progress_range').click(function (e) {
 		//var fileData = $('table.playlist tr.data').eq(playlistIndex).data('file');
@@ -33,24 +33,24 @@ $(document).ready(function () {
 		audioNext();
 	});
 	// hookup audio player buttons
-	$('button.previous').click(audioPrevious);
-	$('button.play').click(audioPlay);
-	$('button.pause').click(audioPause);
-	$('button.stop').click(audioStop);
-	$('button.next').click(audioNext);
+	$('img.previous').click(audioPrevious);
+	$('img.play').click(audioPlay);
+	$('img.pause').click(audioPause);
+	$('img.stop').click(audioStop);
+	$('img.next').click(audioNext);
 	// keyboard shortcuts
 	$(document).keypress(function (e) {
 		var key = String.fromCharCode(e.charCode);
 		if (key == 'z') {
-			$('button.previous').click();
+			$('img.previous').click();
 		} else if (key == 'x') {
-			$('button.play').click();
+			$('img.play').click();
 		} else if (key == 'c') {
-			$('button.pause').click();
+			$('img.pause').click();
 		} else if (key == 'v') {
-			$('button.stop').click();
+			$('img.stop').click();
 		} else if (key == 'b') {
-			$('button.next').click();
+			$('img.next').click();
 		}
 	});
 });
@@ -152,7 +152,7 @@ function audioPlay() {
 	$('table.playlist tr.data').eq(playlistIndex).addClass('selected');
 	$('table.playlist tr.data').eq(playlistIndex).scrollintoview();
 	// change current song label
-	$('span.currentSong').html(fileData.title);
+	$('span.currentSong').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + fileData.title);
 	// load selected song
 	$('audio.player').children().remove();
 	$('audio.player').append('<source src="' + fileData.playUrl + '" type="audio/mpeg" />');
