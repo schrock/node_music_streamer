@@ -61,7 +61,12 @@ function stringifyTime(time) {
 	if (seconds < 10) {
 		seconds = '0' + seconds;
 	}
-	return minutes + ':' + seconds;
+
+	if (isNaN(minutes) || isNaN(seconds)) {
+		return '0:00';
+	} else {
+		return minutes + ':' + seconds;
+	}
 }
 
 function browser_bootstrap() {
