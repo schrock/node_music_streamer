@@ -26,7 +26,7 @@ div.playlist {
 	left: 30%;
 	bottom: 0px;
 	width: 70%;
-	height: 90%;
+	height: calc(100% - 55px);
 	overflow: auto;
 }
 
@@ -35,7 +35,7 @@ div.player {
 	left: 30%;
 	top: 0px;
 	width: 70%;
-	height: 10%;
+	height: 55px;
 	overflow: auto;
 }
 
