@@ -107,12 +107,18 @@ function handleDirs(parent, dirs) {
 				playlistIndex = 0;
 				// clear playlist
 				$('table.playlist tr.data').remove();
+				// show loading message
+				$('div.playlist').hide();
+				$('div.loading_message').show();
 				// get dir contents
 				var dirUrl = $(element).data('dirUrl');
 				$.get(dirUrl, function (data, status) {
 					if (status == 'success') {
 						handleDirContents(OptimalSelect.select(element), data);
 					}
+					// hide loading message
+					$('div.loading_message').hide();
+					$('div.playlist').show();
 				});
 			}
 			return false;
