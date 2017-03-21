@@ -92,15 +92,23 @@ function handleDirContents(parent, dirEntries) {
 }
 
 function handleDirs(parent, dirs) {
-	$(parent).append('<ul></ul>');
+	if (dirs.length > 0) {
+		$(parent).append('<ul></ul>');
+	}
 	for (var dir of dirs) {
 		$(parent + ' ul').append('<li>' + dir.name + '</li>');
 		$(parent + ' ul li').last().data('dirUrl', dir.dirUrl);
 		$(parent + ' ul li').last().click(function () {
 			var element = this;
+			console.log('clicked ' + $(element).html());
 			if ($(element).children().length > 0) {
 				$(element).children().remove();
 			} else {
+				// reset playlistIndex
+				playlistIndex = 0;
+				// clear playlist
+				$('table.playlist tr.data').remove();
+				// get dir contents
 				var dirUrl = $(element).data('dirUrl');
 				$.get(dirUrl, function (data, status) {
 					if (status == 'success') {
@@ -114,10 +122,6 @@ function handleDirs(parent, dirs) {
 }
 
 function handleFiles(files) {
-	// reset playlistIndex
-	playlistIndex = 0;
-
-	$('table.playlist tr.data').remove();
 	for (var file of files) {
 		for (var track of file.tracks) {
 			//console.log(JSON.stringify(file, null, 4));
