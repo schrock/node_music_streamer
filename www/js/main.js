@@ -100,7 +100,6 @@ function handleDirs(parent, dirs) {
 		$(parent + ' ul li').last().data('dirUrl', dir.dirUrl);
 		$(parent + ' ul li').last().click(function () {
 			var element = this;
-			console.log('clicked ' + $(element).html());
 			if ($(element).children().length > 0) {
 				$(element).children().remove();
 			} else {

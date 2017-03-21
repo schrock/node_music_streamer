@@ -2,6 +2,7 @@
 <html>
 
 <head>
+	<title>node_music_streamer</title>
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<script src="node_modules/jquery/dist/jquery.min.js"></script>
 	<script src="node_modules/jquery.scrollintoview/jquery.scrollintoview.js"></script>
@@ -11,17 +12,6 @@
 
 <body>
 	<div class="browser"></div>
-	<div class="playlist">
-		<table class="playlist">
-			<tr class="header">
-				<th class="trackNum">#</th>
-				<th class="title">Title</th>
-				<th class="artist">Artist</th>
-				<th class="album">Album</th>
-				<th class="duration">Duration</th>
-			</tr>
-		</table>
-	</div>
 	<div class="player">
 		<audio class="player"></audio>
 		<div class="progress_range">
@@ -34,6 +24,17 @@
 		<img class="next" src="/icon/playback_next_icon&24.png" alt="next">
 		<span class="currentSong"></span>
 		<span class="time"></span>
+	</div>
+	<div class="playlist">
+		<table class="playlist">
+			<tr class="header">
+				<th class="trackNum">#</th>
+				<th class="title">Title</th>
+				<th class="artist">Artist</th>
+				<th class="album">Album</th>
+				<th class="duration">Duration</th>
+			</tr>
+		</table>
 	</div>
 </body>
 

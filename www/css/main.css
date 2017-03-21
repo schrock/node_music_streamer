@@ -21,21 +21,21 @@ div.browser {
 	overflow: auto;
 }
 
-div.playlist {
-	position: absolute;
-	left: 30%;
-	bottom: 0px;
-	width: 70%;
-	height: calc(100% - 55px);
-	overflow: auto;
-}
-
 div.player {
 	position: absolute;
 	left: 30%;
 	top: 0px;
 	width: 70%;
 	height: 55px;
+	overflow: auto;
+}
+
+div.playlist {
+	position: absolute;
+	left: 30%;
+	bottom: 0px;
+	width: 70%;
+	height: calc(100% - 55px);
 	overflow: auto;
 }
 
