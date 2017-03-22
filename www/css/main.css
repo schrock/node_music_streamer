@@ -11,8 +11,8 @@ body {
 }
 
 div.browser {
-	outline: 2px solid black;
-	outline-offset: -2px;
+	border-right: 2px solid #ABABBE;
+	box-sizing: border-box;
 	position: absolute;
 	left: 0px;
 	top: 0px;
@@ -54,8 +54,8 @@ div.loading_message {
 div.progress_range {
 	width: 100%;
 	height: 25px;
-	outline: 2px solid black;
-	outline-offset: -2px;
+	border-bottom: 2px solid #ABABBE;
+	box-sizing: border-box;
 }
 
 div.progress {
