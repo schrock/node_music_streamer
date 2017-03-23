@@ -11,7 +11,7 @@ $(document).ready(function () {
 		//var fileData = $('table.playlist tr.data').eq(playlistIndex).data('file');
 		//var duration = fileData.duration;
 		var duration = $('audio.player').get(0).duration;
-		$('div.progress').stop(true, true).animate({ 'width': (currentTime + .25) / duration * 100 + '%' }, 250, 'linear');
+		$('div.progress').stop(true, true).animate({ 'width': currentTime / duration * 100 + '%' }, 250, 'linear');
 		// update time display
 		$('span.time').html(fileData.format + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + stringifyTime(currentTime) + ' / ' + stringifyTime(duration));
 	});
