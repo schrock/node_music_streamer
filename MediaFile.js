@@ -17,12 +17,14 @@ module.exports = class MediaFile extends DirEntry {
 		var artist = '';
 		var album = '';
 		var duration = 1200;
+		var gain = '0dB';
 		try {
 			var metadata = ffprobe(path);
-			// console.log(metadata);
+			//console.log(metadata);
 			format = metadata.format.format_name;
 			var tags = metadata.format.tags;
 			if (tags != null) {
+				//console.log(tags);
 				// tracks
 				if (tags.tracks != null) {
 					tracks = Number(tags.tracks);
@@ -72,8 +74,22 @@ module.exports = class MediaFile extends DirEntry {
 				if (metadata.format.duration != null && typeof metadata.format.duration == 'number') {
 					duration = metadata.format.duration;
 				}
+				// gain
+				if (tags.replaygain_track_gain != null) {
+					gain = tags.replaygain_track_gain;
+				}
+				if (tags.REPLAYGAIN_TRACK_GAIN != null) {
+					gain = tags.REPLAYGAIN_TRACK_GAIN;
+				}
+				if (tags.replaygain_album_gain != null) {
+					gain = tags.replaygain_album_gain;
+				}
+				if (tags.REPLAYGAIN_ALBUM_GAIN != null) {
+					gain = tags.REPLAYGAIN_ALBUM_GAIN;
+				}
+				gain = gain.replace(/\s/g, '');
 			}
-			playUrl += '&duration=' + duration;
+			playUrl += '&duration=' + duration + '&gain=' + gain;
 		} catch (err) {
 			console.log('Error while reading metadata for ' + path + '\n' + err);
 		}
@@ -92,6 +108,7 @@ module.exports = class MediaFile extends DirEntry {
 			details.artist = artist;
 			details.album = album;
 			details.duration = duration;
+			details.gain = gain;
 			this.tracks.push(details);
 		}
 	}
