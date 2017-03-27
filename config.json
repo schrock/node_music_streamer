@@ -2,6 +2,7 @@
 	"baseDir": "e:/music",
 	"extensions": [
 		"mp3",
+		"m4a",
 		"flac",
 		"ogg",
 		"ay",

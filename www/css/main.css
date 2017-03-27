@@ -26,8 +26,8 @@ div.player {
 	left: 30%;
 	top: 0px;
 	width: 70%;
-	height: 51px;
-	overflow: auto;
+	height: 50px;
+	overflow: hidden;
 }
 
 div.playlist {
@@ -35,7 +35,7 @@ div.playlist {
 	left: 30%;
 	bottom: 0px;
 	width: 70%;
-	height: calc(100% - 51px);
+	height: calc(100% - 50px);
 	overflow: auto;
 }
 
@@ -44,7 +44,7 @@ div.loading_message {
 	left: 30%;
 	bottom: 0px;
 	width: 70%;
-	height: calc(100% - 51px);
+	height: calc(100% - 50px);
 	overflow: auto;
 	z-index: -1;
 	font-size: 16px;
