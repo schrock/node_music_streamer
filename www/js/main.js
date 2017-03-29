@@ -1,4 +1,4 @@
-var isPlaying = false;
+var isSeeking = false;
 var playlistIndex = 0;
 var fileData = null;
 
@@ -16,8 +16,7 @@ $(document).ready(function () {
 		$('span.time').html(fileData.format + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + stringifyTime(currentTime) + ' / ' + stringifyTime(duration));
 	});
 	$('div.progress_range').click(function (e) {
-		//var fileData = $('table.playlist tr.data').eq(playlistIndex).data('file');
-		//var duration = fileData.duration;
+		isSeeking = true;
 		var duration = $('audio.player').get(0).duration;
 		if (duration > 0) {
 			var selectedX = e.pageX - $(this).offset().left;
@@ -31,6 +30,16 @@ $(document).ready(function () {
 	// automatic track change at end of current song
 	$('audio.player').on('ended', function () {
 		audioNext();
+	});
+	// automatic track change due to inaccurate duration calculation 
+	$('audio.player').on('play playing', function () {
+		isSeeking = false;
+	});
+	$('audio.player').on('waiting', function () {
+		var currentTime = $('audio.player').get(0).currentTime;
+		if(currentTime > 0 && !isSeeking){
+			audioNext();
+		}
 	});
 	// hookup audio player buttons
 	$('img.previous').click(audioPrevious);
@@ -155,7 +164,6 @@ function audioStop() {
 	$('audio.player').get(0).currentTime = 0;
 	$('div.progress').stop(true, true);
 	$('div.progress').width('0px');
-	isPlaying = false;
 }
 
 function audioPlay() {
@@ -173,16 +181,13 @@ function audioPlay() {
 	$('audio.player').get(0).load();
 	// start playback
 	$('audio.player').get(0).play();
-	isPlaying = true;
 }
 
 function audioPause() {
-	if (isPlaying) {
-		$('audio.player').get(0).pause();
-		isPlaying = false;
-	} else {
+	if ($('audio.player').get(0).paused) {
 		$('audio.player').get(0).play();
-		isPlaying = true;
+	} else {
+		$('audio.player').get(0).pause();
 	}
 }
 
