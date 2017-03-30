@@ -37,7 +37,7 @@ $(document).ready(function () {
 	});
 	$('audio.player').on('waiting', function () {
 		var currentTime = $('audio.player').get(0).currentTime;
-		if(currentTime > 0 && !isSeeking){
+		if (currentTime > 0 && !isSeeking) {
 			audioNext();
 		}
 	});
@@ -105,12 +105,12 @@ function handleDirs(parent, dirs) {
 		$(parent).append('<ul></ul>');
 	}
 	for (var dir of dirs) {
-		$(parent + ' ul').append('<li>' + dir.name + '</li>');
-		$(parent + ' ul li').last().data('dirUrl', dir.dirUrl);
-		$(parent + ' ul li').last().click(function () {
+		$(parent + ' ul').append('<li><span>' + dir.name + '</span></li>');
+		$(parent + ' ul li span').last().data('dirUrl', dir.dirUrl);
+		$(parent + ' ul li span').last().click(function () {
 			var element = this;
-			if ($(element).children().length > 0) {
-				$(element).children().remove();
+			if ($(element).siblings('ul').length > 0) {
+				$(element).siblings('ul').remove();
 			} else {
 				// reset playlistIndex
 				playlistIndex = 0;
@@ -123,7 +123,7 @@ function handleDirs(parent, dirs) {
 				var dirUrl = $(element).data('dirUrl');
 				$.get(dirUrl, function (data, status) {
 					if (status == 'success') {
-						handleDirContents(OptimalSelect.select(element), data);
+						handleDirContents(OptimalSelect.select(element.parentNode), data);
 					}
 					// hide loading message
 					$('div.loading_message').hide();
@@ -133,6 +133,13 @@ function handleDirs(parent, dirs) {
 			return false;
 		});
 	}
+	$('li span').hover(
+		function () {
+			$(this).addClass('hover');
+		}, function () {
+			$(this).removeClass('hover');
+		}
+	);
 }
 
 function handleFiles(files) {
@@ -148,7 +155,7 @@ function handleFiles(files) {
 			$('table.playlist tr.data').last().data('file', track);
 		}
 	}
-	$('table.playlist tr.data').dblclick(function () {
+	$('table.playlist tr.data').click(function () {
 		// stop current song
 		audioStop();
 		// update playlistIndex
@@ -157,6 +164,13 @@ function handleFiles(files) {
 		audioPlay();
 		return false;
 	});
+	$('table.playlist tr.data').hover(
+		function () {
+			$(this).addClass('hover');
+		}, function () {
+			$(this).removeClass('hover');
+		}
+	);
 }
 
 function audioStop() {
