@@ -12,6 +12,7 @@ module.exports = class MediaFile extends DirEntry {
 		// parse tag metadata
 		var format = '';
 		var tracks = 1;
+		var disc = '';
 		var track = '';
 		var title = name;
 		var artist = '';
@@ -20,14 +21,21 @@ module.exports = class MediaFile extends DirEntry {
 		var gain = '0dB';
 		try {
 			var metadata = ffprobe(path);
-			//console.log(metadata);
+			// console.log(metadata);
 			format = metadata.format.format_name;
 			var tags = metadata.format.tags;
 			if (tags != null) {
-				//console.log(tags);
+				// console.log(tags);
 				// tracks
 				if (tags.tracks != null) {
 					tracks = Number(tags.tracks);
+				}
+				// disc
+				if (tags.disc != null) {
+					disc = tags.disc;
+				}
+				if (tags.DISC != null) {
+					disc = tags.DISC;
 				}
 				// track
 				if (tags.track != null) {
@@ -88,6 +96,12 @@ module.exports = class MediaFile extends DirEntry {
 					gain = tags.REPLAYGAIN_ALBUM_GAIN;
 				}
 				gain = gain.replace(/\s/g, '');
+			}
+			if (disc.length > 0) {
+				if (track.length < 2) {
+					track = '0' + track;
+				}
+				track = disc + '.' + track;
 			}
 			playUrl += '&duration=' + duration + '&gain=' + gain;
 		} catch (err) {
