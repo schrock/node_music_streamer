@@ -89,12 +89,12 @@ module.exports = class MediaFile extends DirEntry {
 				if (tags.REPLAYGAIN_TRACK_GAIN != null) {
 					gain = tags.REPLAYGAIN_TRACK_GAIN;
 				}
-				if (tags.replaygain_album_gain != null) {
-					gain = tags.replaygain_album_gain;
-				}
-				if (tags.REPLAYGAIN_ALBUM_GAIN != null) {
-					gain = tags.REPLAYGAIN_ALBUM_GAIN;
-				}
+				// if (tags.replaygain_album_gain != null) {
+				// 	gain = tags.replaygain_album_gain;
+				// }
+				// if (tags.REPLAYGAIN_ALBUM_GAIN != null) {
+				// 	gain = tags.REPLAYGAIN_ALBUM_GAIN;
+				// }
 				gain = gain.replace(/\s/g, '');
 			}
 			if (disc.length > 0) {
