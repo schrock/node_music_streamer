@@ -2,42 +2,62 @@
 <html>
 
 <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>node_music_streamer</title>
 	<link rel="shortcut icon" type="image/png" href="icon/favicon.png">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap-theme.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="css/main.css"> -->
 	<script src="node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="node_modules/jquery.scrollintoview/jquery.scrollintoview.js"></script>
 	<script src="node_modules/optimal-select/dist/optimal-select.min.js"></script>
 	<script src="js/main.js"></script>
 </head>
 
 <body>
-	<div class="browser"></div>
-	<div class="player">
-		<audio class="player"></audio>
-		<div class="progress_range">
-			<div class="progress"></div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="browser col-md-3"></div>
+			<div class="col-md-9">
+				<div class="row">
+					<div class="player col-md-9">
+						<audio class="player"></audio>
+						<div class="progress_range">
+							<div class="progress"></div>
+						</div>
+						<div class="btn-group">
+							<button class="btn btn-default previous"><span class="glyphicon glyphicon-step-backward"></span></button>
+							<button class="btn btn-default play"><span class="glyphicon glyphicon-play"></span></button>
+							<button class="btn btn-default pause"><span class="glyphicon glyphicon-pause"></span></button>
+							<button class="btn btn-default stop"><span class="glyphicon glyphicon-stop"></span></button>
+							<button class="btn btn-default next"><span class="glyphicon glyphicon-step-forward"></span></button>
+						</div>
+						<span class="currentSong"></span>
+						<span class="time"></span>
+					</div>
+				</div>
+				<div class="row">
+					<div class="playlist col-md-9">
+						<table class="playlist table table-striped table-hover table-condensed">
+							<tr class="header">
+								<th class="trackNum">#</th>
+								<th class="title">Title</th>
+								<th class="artist">Artist</th>
+								<th class="album">Album</th>
+								<th class="duration">Duration</th>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="row">
+					<div class="loading_message alert alert-info">Loading playlist contents...</div>
+				</div>
+			</div>
 		</div>
-		<img class="control previous" src="/icon/playback_prev_icon&24.png" alt="previous">
-		<img class="control play" src="/icon/playback_play_icon&24.png" alt="play">
-		<img class="control pause" src="/icon/playback_pause_icon&24.png" alt="pause">
-		<img class="control stop" src="/icon/playback_stop_icon&24.png" alt="stop">
-		<img class="control next" src="/icon/playback_next_icon&24.png" alt="next">
-		<span class="currentSong"></span>
-		<span class="time"></span>
 	</div>
-	<div class="playlist">
-		<table class="playlist">
-			<tr class="header">
-				<th class="trackNum">#</th>
-				<th class="title">Title</th>
-				<th class="artist">Artist</th>
-				<th class="album">Album</th>
-				<th class="duration">Duration</th>
-			</tr>
-		</table>
-	</div>
-	<div class="loading_message">Loading playlist contents...</div>
 </body>
 
 </html>

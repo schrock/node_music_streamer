@@ -3,6 +3,8 @@ var playlistIndex = 0;
 var fileData = null;
 
 $(document).ready(function () {
+	// hide loading message by default
+	//$('div.loading_message').hide();
 	// get root browser contents
 	browser_bootstrap();
 	// hookup progress bar
@@ -42,24 +44,24 @@ $(document).ready(function () {
 		}
 	});
 	// hookup audio player buttons
-	$('img.previous').click(audioPrevious);
-	$('img.play').click(audioPlay);
-	$('img.pause').click(audioPause);
-	$('img.stop').click(audioStop);
-	$('img.next').click(audioNext);
+	$('button.previous').click(audioPrevious);
+	$('button.play').click(audioPlay);
+	$('button.pause').click(audioPause);
+	$('button.stop').click(audioStop);
+	$('button.next').click(audioNext);
 	// keyboard shortcuts
 	$(document).keypress(function (e) {
 		var key = String.fromCharCode(e.charCode);
 		if (key == 'z') {
-			$('img.previous').click();
+			$('button.previous').click();
 		} else if (key == 'x') {
-			$('img.play').click();
+			$('button.play').click();
 		} else if (key == 'c') {
-			$('img.pause').click();
+			$('button.pause').click();
 		} else if (key == 'v') {
-			$('img.stop').click();
+			$('button.stop').click();
 		} else if (key == 'b') {
-			$('img.next').click();
+			$('button.next').click();
 		}
 	});
 });
@@ -184,8 +186,8 @@ function audioPlay() {
 	audioStop();
 	fileData = $('table.playlist tr.data').eq(playlistIndex).data('file');
 	// highlight in playlist
-	$('table.playlist tr.data').removeClass('selected');
-	$('table.playlist tr.data').eq(playlistIndex).addClass('selected');
+	$('table.playlist tr.data').removeClass('info');
+	$('table.playlist tr.data').eq(playlistIndex).addClass('info');
 	$('table.playlist tr.data').eq(playlistIndex).scrollintoview();
 	// change current song label
 	$('span.currentSong').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + fileData.title);
