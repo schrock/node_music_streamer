@@ -4,7 +4,7 @@ var fileData = null;
 
 $(document).ready(function () {
 	// hide loading message by default
-	//$('div.loading_message').hide();
+	$('div.loading_message').hide();
 	// get root browser contents
 	browser_bootstrap();
 	// hookup progress bar
