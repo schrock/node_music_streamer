@@ -3,8 +3,6 @@ var playlistIndex = 0;
 var fileData = null;
 
 $(document).ready(function () {
-	// hide loading message by default
-	$('div.loading_message').hide();
 	// get root browser contents
 	browser_bootstrap();
 	// hookup progress bar
@@ -13,11 +11,12 @@ $(document).ready(function () {
 		//var fileData = $('table.playlist tr.data').eq(playlistIndex).data('file');
 		//var duration = fileData.duration;
 		var duration = $('audio.player').get(0).duration;
-		$('div.progress').stop(true, true).animate({ 'width': currentTime / duration * 100 + '%' }, 250, 'linear');
+		$('div.progress-bar').width(currentTime / duration * 100 + '%');
 		// update time display
-		$('span.time').html(fileData.format + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + stringifyTime(currentTime) + ' / ' + stringifyTime(duration));
+		$('div.progress-bar').html(stringifyTime(currentTime));
+		$('.currentTime').html(fileData.format + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + stringifyTime(currentTime) + ' / ' + stringifyTime(duration));
 	});
-	$('div.progress_range').click(function (e) {
+	$('div.progress').click(function (e) {
 		isSeeking = true;
 		var duration = $('audio.player').get(0).duration;
 		if (duration > 0) {
@@ -119,8 +118,8 @@ function handleDirs(parent, dirs) {
 				// clear playlist
 				$('table.playlist tr.data').remove();
 				// show loading message
-				$('div.playlist').hide();
-				$('div.loading_message').show();
+				$('table.playlist').hide();
+				$('.loading_message').show();
 				// get dir contents
 				var dirUrl = $(element).data('dirUrl');
 				$.get(dirUrl, function (data, status) {
@@ -128,8 +127,8 @@ function handleDirs(parent, dirs) {
 						handleDirContents(OptimalSelect.select(element.parentNode), data);
 					}
 					// hide loading message
-					$('div.loading_message').hide();
-					$('div.playlist').show();
+					$('.loading_message').hide();
+					$('table.playlist').show();
 				});
 			}
 			return false;
@@ -178,8 +177,7 @@ function handleFiles(files) {
 function audioStop() {
 	$('audio.player').get(0).pause();
 	$('audio.player').get(0).currentTime = 0;
-	$('div.progress').stop(true, true);
-	$('div.progress').width('0px');
+	$('div.progress-bar').width('0%');
 }
 
 function audioPlay() {
@@ -190,20 +188,23 @@ function audioPlay() {
 	$('table.playlist tr.data').eq(playlistIndex).addClass('info');
 	$('table.playlist tr.data').eq(playlistIndex).scrollintoview();
 	// change current song label
-	$('span.currentSong').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + fileData.title);
+	$('.currentSong').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + fileData.title);
 	// load selected song
 	$('audio.player').children().remove();
 	$('audio.player').append('<source src="' + fileData.playUrl + '" type="audio/mpeg" />');
 	$('audio.player').get(0).load();
 	// start playback
 	$('audio.player').get(0).play();
+	$('div.progress-bar').addClass('active');
 }
 
 function audioPause() {
 	if ($('audio.player').get(0).paused) {
 		$('audio.player').get(0).play();
+		$('div.progress-bar').addClass('active');
 	} else {
 		$('audio.player').get(0).pause();
+		$('div.progress-bar').removeClass('active');
 	}
 }
 

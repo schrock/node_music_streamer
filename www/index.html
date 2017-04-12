@@ -7,9 +7,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>node_music_streamer</title>
 	<link rel="shortcut icon" type="image/png" href="icon/favicon.png">
-	<!-- <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css"> -->
 	<link rel="stylesheet" type="text/css" href="css/bootstrap-slate.css">
-	<!-- <link rel="stylesheet" type="text/css" href="css/main.css"> -->
+	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<script src="node_modules/jquery/dist/jquery.min.js"></script>
 	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="node_modules/jquery.scrollintoview/jquery.scrollintoview.js"></script>
@@ -18,29 +17,39 @@
 </head>
 
 <body>
-	<div class="container">
+	<div class="container-fluid">
 		<div class="row">
-			<div class="browser col-lg-3"></div>
+			<div class="col-lg-3">
+				<div class="browser"></div>
+			</div>
 			<div class="col-lg-9">
 				<div class="row">
-					<audio class="player"></audio>
-					<div class="progress_range col-lg-12">
-						<div class="progress"></div>
+					<div class="col-lg-12">
+						<audio class="player" style="display: none;"></audio>
+						<div class="progress">
+							<div class="progress-bar progress-bar-striped active"></div>
+						</div>
 					</div>
 				</div>
 				<div class="row">
-					<div class="btn-group col-lg-4">
-						<button class="btn btn-default previous"><span class="glyphicon glyphicon-step-backward"></span></button>
-						<button class="btn btn-default play"><span class="glyphicon glyphicon-play"></span></button>
-						<button class="btn btn-default pause"><span class="glyphicon glyphicon-pause"></span></button>
-						<button class="btn btn-default stop"><span class="glyphicon glyphicon-stop"></span></button>
-						<button class="btn btn-default next"><span class="glyphicon glyphicon-step-forward"></span></button>
+					<div class="col-lg-4">
+						<div class="btn-group">
+							<button class="btn btn-default previous"><span class="glyphicon glyphicon-step-backward"></span></button>
+							<button class="btn btn-default play"><span class="glyphicon glyphicon-play"></span></button>
+							<button class="btn btn-default pause"><span class="glyphicon glyphicon-pause"></span></button>
+							<button class="btn btn-default stop"><span class="glyphicon glyphicon-stop"></span></button>
+							<button class="btn btn-default next"><span class="glyphicon glyphicon-step-forward"></span></button>
+						</div>
 					</div>
-					<div class="col-lg-5"><span class="currentSong"></span></div>
-					<div class="col-lg-3"><span class="time"></span></div>
+					<div class="col-lg-5">
+						<p class="currentSong text-left"></p>
+					</div>
+					<div class="col-lg-3">
+						<p class="currentTime text-right"></p>
+					</div>
 				</div>
 				<div class="row">
-					<div class="playlist col-lg-12">
+					<div class="col-lg-12">
 						<table class="playlist table table-striped table-hover table-condensed">
 							<tr class="header">
 								<th class="trackNum col-lg-1">#</th>
@@ -53,7 +62,9 @@
 					</div>
 				</div>
 				<div class="row">
-					<div class="loading_message alert alert-info col-lg-12">Loading playlist contents...</div>
+					<div class="col-lg-12">
+						<h5 class="loading_message alert alert-info" style="display: none;">Loading playlist contents...</h5>
+					</div>
 				</div>
 			</div>
 		</div>
