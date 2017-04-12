@@ -3,12 +3,22 @@ body {
 	user-select: none;
 }
 
+div.browser {
+	height: 100vh;
+	overflow-y: auto;
+}
+
 li span {
 	cursor: pointer;
 }
 
 div.progress {
 	cursor: pointer;
+}
+
+div.playlist_container {
+	height: calc(100vh - 80px);
+	overflow-y: auto;
 }
 
 tr.data {
