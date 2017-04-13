@@ -1,6 +1,7 @@
 var isSeeking = false;
 var playlistIndex = 0;
 var fileData = null;
+var repeat = false;
 
 $(document).ready(function () {
 	// get root browser contents
@@ -30,7 +31,11 @@ $(document).ready(function () {
 	});
 	// automatic track change at end of current song
 	$('audio.player').on('ended', function () {
-		audioNext();
+		if (repeat) {
+			audioPlay();
+		} else {
+			audioNext();
+		}
 	});
 	// automatic track change due to inaccurate duration calculation 
 	$('audio.player').on('play playing', function () {
@@ -48,6 +53,7 @@ $(document).ready(function () {
 	$('button.pause').click(audioPause);
 	$('button.stop').click(audioStop);
 	$('button.next').click(audioNext);
+	$('button.repeat').click(audioRepeat);
 	// keyboard shortcuts
 	$(document).keypress(function (e) {
 		var key = String.fromCharCode(e.charCode);
@@ -134,13 +140,6 @@ function handleDirs(parent, dirs) {
 			return false;
 		});
 	}
-	$('li span').hover(
-		function () {
-			$(this).addClass('hover');
-		}, function () {
-			$(this).removeClass('hover');
-		}
-	);
 }
 
 function handleFiles(files) {
@@ -165,13 +164,6 @@ function handleFiles(files) {
 		audioPlay();
 		return false;
 	});
-	$('table.playlist tr.data').hover(
-		function () {
-			$(this).addClass('hover');
-		}, function () {
-			$(this).removeClass('hover');
-		}
-	);
 }
 
 function audioStop() {
@@ -232,4 +224,14 @@ function audioNext() {
 		playlistIndex = 0;
 	}
 	audioPlay();
+}
+
+function audioRepeat() {
+	if (repeat) {
+		repeat = false;
+		$('button.repeat').removeClass('active');
+	} else {
+		repeat = true;
+		$('button.repeat').addClass('active');
+	}
 }
