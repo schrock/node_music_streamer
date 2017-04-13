@@ -44,7 +44,11 @@ $(document).ready(function () {
 	$('audio.player').on('waiting', function () {
 		var currentTime = $('audio.player').get(0).currentTime;
 		if (currentTime > 0 && !isSeeking) {
-			audioNext();
+			if (repeat) {
+				audioPlay();
+			} else {
+				audioNext();
+			}
 		}
 	});
 	// hookup audio player buttons
