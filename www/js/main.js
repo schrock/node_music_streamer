@@ -118,7 +118,7 @@ function handleDirs(parent, dirs) {
 				// clear playlist
 				$('table.playlist tr.data').remove();
 				// show loading message
-				$('table.playlist').hide();
+				$('.playlist_container').hide();
 				$('.loading_message').show();
 				// get dir contents
 				var dirUrl = $(element).data('dirUrl');
@@ -128,7 +128,7 @@ function handleDirs(parent, dirs) {
 					}
 					// hide loading message
 					$('.loading_message').hide();
-					$('table.playlist').show();
+					$('.playlist_container').show();
 				});
 			}
 			return false;
