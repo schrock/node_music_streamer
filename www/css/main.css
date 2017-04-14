@@ -3,6 +3,11 @@ body {
 	user-select: none;
 }
 
+div.no-gutter {
+	padding-right: 0;
+	padding-left: 0;
+}
+
 div.browser {
 	height: 100vh;
 	overflow-y: auto;
@@ -14,10 +19,11 @@ li span {
 
 div.progress {
 	cursor: pointer;
+	margin-bottom: 0px;
 }
 
 div.playlist_container {
-	height: calc(100vh - 80px);
+	height: calc(100vh - 60px);
 	overflow-y: auto;
 }
 
@@ -30,4 +36,8 @@ td {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+.loading_message {
+	display: none;
 }
