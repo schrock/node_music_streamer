@@ -11,6 +11,7 @@ div.no-gutter {
 div.browser {
 	height: 100vh;
 	overflow-y: auto;
+	font-size: 12px;
 }
 
 li span {
@@ -23,8 +24,9 @@ div.progress {
 }
 
 div.playlist_container {
-	height: calc(100vh - 60px);
+	height: calc(100vh - 55px);
 	overflow-y: auto;
+	font-size: 12px;
 }
 
 tr.data {
