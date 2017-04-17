@@ -14,8 +14,9 @@ div.browser {
 	font-size: 12px;
 }
 
-li span {
+li span:hover {
 	cursor: pointer;
+	text-decoration: underline;
 }
 
 div.progress {
