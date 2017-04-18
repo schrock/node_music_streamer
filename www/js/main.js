@@ -15,7 +15,7 @@ $(document).ready(function () {
 		$('div.progress-bar').width(currentTime / duration * 100 + '%');
 		// update time display
 		$('div.progress-bar').html(stringifyTime(currentTime));
-		$('.currentTime').html(fileData.format + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + stringifyTime(currentTime) + ' / ' + stringifyTime(duration));
+		$('.currentTime').html(fileData.gain + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + fileData.format + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + stringifyTime(currentTime) + ' / ' + stringifyTime(duration) + '&nbsp;');
 	});
 	$('div.progress').click(function (e) {
 		isSeeking = true;
