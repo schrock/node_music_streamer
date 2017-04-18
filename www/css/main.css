@@ -30,15 +30,35 @@ div.playlist_container {
 	font-size: 12px;
 }
 
-tr.data {
+table.playlist tbody tr {
 	cursor: pointer;
 }
 
-td {
+table.playlist tbody tr td {
 	max-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+th.trackNum, td.trackNum {
+	width: 5%;
+}
+
+th.title, td.title {
+	width: 50%;
+}
+
+th.artist, td.artist {
+	width: 20%;
+}
+
+th.album, td.ablum {
+	width: 20%;
+}
+
+th.duration, td.duration {
+	width: 5%;
 }
 
 .loading_message {
