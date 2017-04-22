@@ -24,6 +24,18 @@ div.progress {
 	margin-bottom: 0px;
 }
 
+.currentSong {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.currentTime {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 div.playlist_container {
 	height: calc(100vh - 55px);
 	overflow-y: auto;
