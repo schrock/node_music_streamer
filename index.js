@@ -5,6 +5,7 @@ var config = require('./config.json');
 const express = require('express');
 const app = express();
 const ipfilter = require('express-ipfilter').IpFilter;
+require('express-ipfilter').IpDeniedError;
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 
@@ -16,6 +17,19 @@ const MediaFile = require('./MediaFile.js');
 // whitelist certain ip addresses
 var ips = ['127.0.0.1', '::1', ['192.168.1.1', '192.168.1.255'], ['128.149.0.0', '128.149.255.255'], ['137.79.0.0', '137.79.255.255']];
 app.use(ipfilter(ips, { mode: 'allow', logLevel: 'deny' }));
+app.use(function (err, req, res, _next) {
+	console.log('Error handler', err);
+	if (err instanceof IpDeniedError) {
+		res.status(401);
+	} else {
+		res.status(err.status || 500);
+	}
+
+	res.render('error', {
+		message: 'Forbidden by ip filter.',
+		error: err
+	});
+});
 
 app.get('/hello', function (req, res) {
 	res.send('hello world!');
