@@ -6,8 +6,8 @@ var config = require('./config.json');
 // 3rd party
 const express = require('express');
 const app = express();
-const ipfilter = require('express-ipfilter').IpFilter;
-require('express-ipfilter').IpDeniedError;
+const IpFilter = require('express-ipfilter').IpFilter;
+const IpDeniedError = require('express-ipfilter').IpDeniedError;
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 
@@ -17,7 +17,7 @@ const Directory = require('./Directory.js');
 const MediaFile = require('./MediaFile.js');
 
 // whitelist certain ip addresses
-app.use(ipfilter(config.whitelistIps, { mode: 'allow', logLevel: 'deny' }));
+app.use(IpFilter(config.whitelistIps, { mode: 'allow', logLevel: 'deny' }));
 app.use(function (err, req, res, _next) {
 	console.log('Error handler', err);
 	if (err instanceof IpDeniedError) {
