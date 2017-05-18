@@ -1,0 +1,32 @@
+{
+  "name": "node_music_streamer",
+  "version": "1.0.0",
+  "description": "Node.js server and web app providing browser-based access to a remote music library",
+  "main": "server.js",
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "deasync": "^0.1.9",
+    "express": "^4.14.1",
+    "express-ipfilter": "^0.2.3",
+    "fluent-ffmpeg": "^2.1.0",
+    "jquery": "^3.1.1",
+    "jquery.scrollintoview": "^1.9.4",
+    "optimal-select": "^4.0.1",
+    "pem": "^1.9.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schrock/node_music_streamer.git"
+  },
+  "author": "Mitchell Schrock",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/schrock/node_music_streamer/issues"
+  },
+  "homepage": "https://github.com/schrock/node_music_streamer#readme"
+}

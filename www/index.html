@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>node_music_streamer</title>
+	<link rel="shortcut icon" type="image/png" href="icon/favicon.png">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-slate.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<script src="node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="node_modules/jquery.scrollintoview/jquery.scrollintoview.js"></script>
+	<script src="node_modules/optimal-select/dist/optimal-select.min.js"></script>
+	<script src="js/main.js"></script>
+</head>
+
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-3 no-gutter">
+				<div class="browser"></div>
+			</div>
+			<div class="col-md-9">
+				<div class="row">
+					<div class="col-md-12 no-gutter">
+						<audio class="player"></audio>
+						<div class="progress">
+							<div class="progress-bar progress-bar-info progress-bar-striped active"></div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 no-gutter">
+						<div class="btn-group btn-group-sm">
+							<button class="btn btn-default previous"><span class="glyphicon glyphicon-step-backward"></span></button>
+							<button class="btn btn-default play"><span class="glyphicon glyphicon-play"></span></button>
+							<button class="btn btn-default pause"><span class="glyphicon glyphicon-pause"></span></button>
+							<button class="btn btn-default stop"><span class="glyphicon glyphicon-stop"></span></button>
+							<button class="btn btn-default next"><span class="glyphicon glyphicon-step-forward"></span></button>
+						</div>
+						<button class="btn btn-default btn-sm repeat"><span class="glyphicon glyphicon-repeat"></span></button>
+					</div>
+					<div class="col-md-6 no-gutter">
+						<p class="currentSong text-left"></p>
+					</div>
+					<div class="col-md-3 no-gutter">
+						<p class="currentTime text-right"></p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12 no-gutter">
+						<div class="playlist_container">
+							<table class="playlist table table-striped table-hover table-condensed">
+								<thead>
+									<tr>
+										<th class="trackNum">#</th>
+										<th class="title">Title</th>
+										<th class="artist">Artist</th>
+										<th class="album">Album</th>
+										<th class="duration">Duration</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12 no-gutter">
+						<h5 class="loading_message alert alert-info">Loading playlist contents...</h5>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
