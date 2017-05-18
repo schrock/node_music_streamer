@@ -2,7 +2,7 @@
   "name": "node_music_streamer",
   "version": "1.0.0",
   "description": "Node.js server and web app providing browser-based access to a remote music library",
-  "main": "index.js",
+  "main": "server.js",
   "dependencies": {
     "bootstrap": "^3.3.7",
     "deasync": "^0.1.9",
@@ -16,7 +16,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"start": "node server.js"
   },
   "repository": {
     "type": "git",
