@@ -153,7 +153,7 @@ pem.createCertificate({ days: 90, selfSigned: true }, function (err, keys) {
 			command.audioCodec('libmp3lame').audioChannels(2)
 				.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo()
 				.seek(startTime).duration(endTime - startTime)
-				.audioFilters('volume=' + gain)
+				//.audioFilters('volume=' + gain)
 				.on('start', function () {
 					//console.log('Processing started:  ' + realPath);
 				})
