@@ -101,51 +101,72 @@ pem.createCertificate({ days: 90, selfSigned: true }, function (err, keys) {
 			ext = realPath.substring(extIndex + 1);
 		}
 
-		// convert to mp3 using ffmpeg
-		var track_index = Number(req.query.track_index);
-		var gain = req.query.gain;
+		if (ext != null && ext == 'mp3') {
+			// return requested portion of original file
+			console.log('streaming original ' + range + ' : ' + queryPath);
 
-		var duration = req.query.duration;
-		var fileSize = Math.floor(duration * (256 * 1000 / 8));
-		if (endByte.length == 0) {
+			var fileSize = fs.statSync(realPath).size;
+			if (endByte.length == 0) {
+				endByte = fileSize - 1;
+			} else {
+				endByte = Number(endByte);
+			}
 			endByte = fileSize - 1;
+
+			res.setHeader('Content-Range', 'bytes ' + startByte + '-' + endByte + '/' + fileSize);
+			res.setHeader('Content-Length', endByte - startByte + 1);
+			res.status(206);
+
+			fs.createReadStream(realPath, { start: startByte, end: endByte }).pipe(res, { end: true });
 		} else {
-			endByte = Number(endByte);
-		}
-		// console.log('startByte: ' + startByte);
-		// console.log('endByte:   ' + endByte);
-		res.setHeader('Content-Range', 'bytes ' + startByte + '-' + endByte + '/' + fileSize);
-		res.setHeader('Content-Length', endByte - startByte + 1);
-		res.status(206);
+			// convert to mp3 using ffmpeg
+			console.log('converting to mp3 ' + range + ' : ' + queryPath);
 
-		var startTime = 0;
-		if (startByte > 0) {
-			startTime = startByte / (256 * 1000 / 8);
-		}
-		var endTime = endByte / (256 * 1000 / 8);
-		// console.log('startTime: ' + startTime);
-		// console.log('endTime:   ' + endTime);
+			var track_index = Number(req.query.track_index);
+			var gain = req.query.gain;
 
-		var command = ffmpeg(realPath);
-		if (track_index > 0) {
-			command.inputOptions('-track_index ' + track_index);
+			var duration = req.query.duration;
+			var fileSize = Math.floor(duration * (256 * 1000 / 8));
+			if (endByte.length == 0) {
+				endByte = fileSize - 1;
+			} else {
+				endByte = Number(endByte);
+			}
+			// console.log('startByte: ' + startByte);
+			// console.log('endByte:   ' + endByte);
+			res.setHeader('Content-Range', 'bytes ' + startByte + '-' + endByte + '/' + fileSize);
+			res.setHeader('Content-Length', endByte - startByte + 1);
+			res.status(206);
+
+			var startTime = 0;
+			if (startByte > 0) {
+				startTime = startByte / (256 * 1000 / 8);
+			}
+			var endTime = endByte / (256 * 1000 / 8);
+			// console.log('startTime: ' + startTime);
+			// console.log('endTime:   ' + endTime);
+
+			var command = ffmpeg(realPath);
+			if (track_index > 0) {
+				command.inputOptions('-track_index ' + track_index);
+			}
+			command.audioCodec('libmp3lame').audioChannels(2)
+				.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo()
+				.seek(startTime).duration(endTime - startTime)
+				.audioFilters('volume=' + gain)
+				.on('start', function () {
+					//console.log('Processing started:  ' + realPath);
+				})
+				.on('error', function (err) {
+					if (!err.toString().includes('Output stream closed')) {
+						console.log('Processing error:    ' + realPath + ' : ' + err.message);
+					}
+				})
+				.on('end', function () {
+					//console.log('Processing finished: ' + realPath);
+				})
+				.pipe(res, { end: true });
 		}
-		command.audioCodec('libmp3lame').audioChannels(2)
-			.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo()
-			.seek(startTime).duration(endTime - startTime)
-			.audioFilters('volume=' + gain)
-			.on('start', function () {
-				//console.log('Processing started:  ' + realPath);
-			})
-			.on('error', function (err) {
-				if (!err.toString().includes('Output stream closed')) {
-					console.log('Processing error:    ' + realPath + ' : ' + err.message);
-				}
-			})
-			.on('end', function () {
-				//console.log('Processing finished: ' + realPath);
-			})
-			.pipe(res, { end: true });
 	});
 
 	// serve client-side web app
@@ -154,6 +175,6 @@ pem.createCertificate({ days: 90, selfSigned: true }, function (err, keys) {
 	app.use('/node_modules', express.static('node_modules'));
 
 	var port = 8443;
-	https.createServer({key: keys.serviceKey, cert: keys.certificate}, app).listen(port);
+	https.createServer({ key: keys.serviceKey, cert: keys.certificate }, app).listen(port);
 	console.log('node_music_streamer running on port ' + port + '...');
 });
