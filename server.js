@@ -105,6 +105,7 @@ pem.createCertificate({ days: 90, selfSigned: true }, function (err, keys) {
 			// return requested portion of original file
 			console.log('streaming original ' + range + ' : ' + queryPath);
 
+			console.time('fs.statSync');
 			var fileSize = fs.statSync(realPath).size;
 			if (endByte.length == 0) {
 				endByte = fileSize - 1;
@@ -112,12 +113,15 @@ pem.createCertificate({ days: 90, selfSigned: true }, function (err, keys) {
 				endByte = Number(endByte);
 			}
 			endByte = fileSize - 1;
+			console.timeEnd('fs.statSync');
 
 			res.setHeader('Content-Range', 'bytes ' + startByte + '-' + endByte + '/' + fileSize);
 			res.setHeader('Content-Length', endByte - startByte + 1);
 			res.status(206);
 
+			console.time('fs.createReadStream');
 			fs.createReadStream(realPath, { start: startByte, end: endByte }).pipe(res, { end: true });
+			console.timeEnd('fs.createReadStream');
 		} else {
 			// convert to mp3 using ffmpeg
 			console.log('converting to mp3 ' + range + ' : ' + queryPath);
