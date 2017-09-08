@@ -4,8 +4,8 @@
 var config = require('./config.json');
 
 // 3rd party
-const https = require('https');
-const pem = require('pem');
+const cluster = require('cluster');
+const os = require('os');
 const express = require('express');
 const app = express();
 const IpFilter = require('express-ipfilter').IpFilter;
@@ -18,8 +18,18 @@ const DirEntry = require('./DirEntry.js');
 const Directory = require('./Directory.js');
 const MediaFile = require('./MediaFile.js');
 
-pem.createCertificate({ days: 90, selfSigned: true }, function (err, keys) {
+if (cluster.isMaster) {
+	var numCPUs = os.cpus().length;
+	for (var i = 0; i < numCPUs; i++) {
+		// Create a worker
+		cluster.fork();
+	}
 
+	cluster.on('exit', function (worker, code, signal) {
+		console.log('Worker %d died with code/signal %s. Restarting worker...', worker.process.pid, signal || code);
+		cluster.fork();
+	});
+} else {
 	// whitelist certain ip addresses
 	app.use(IpFilter(config.whitelistIps, { mode: 'allow', logLevel: 'deny' }));
 	app.use(function (err, req, res, _next) {
@@ -178,7 +188,7 @@ pem.createCertificate({ days: 90, selfSigned: true }, function (err, keys) {
 	// serve client-side dependencies
 	app.use('/node_modules', express.static('node_modules'));
 
-	var port = 8443;
-	https.createServer({ key: keys.serviceKey, cert: keys.certificate }, app).listen(port);
-	console.log('node_music_streamer running on port ' + port + '...');
-});
+	var port = 8080;
+	app.listen(port);
+	console.log('worker running on port ' + port + '...');
+}

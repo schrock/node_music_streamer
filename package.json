@@ -11,13 +11,12 @@
     "fluent-ffmpeg": "^2.1.0",
     "jquery": "^3.1.1",
     "jquery.scrollintoview": "^1.9.4",
-    "optimal-select": "^4.0.1",
-    "pem": "^1.9.4"
+    "optimal-select": "^4.0.1"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-	"start": "node server.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
