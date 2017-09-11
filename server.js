@@ -40,10 +40,7 @@ if (cluster.isMaster) {
 			res.status(err.status || 500);
 		}
 
-		res.render('error', {
-			message: 'Forbidden by ip filter.',
-			error: err
-		});
+		res.send(err.message);
 	});
 
 	app.get('/hello', function (req, res) {
