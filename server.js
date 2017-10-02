@@ -34,10 +34,8 @@ if (cluster.isMaster) {
 	app.use(IpFilter(config.whitelistIps, { mode: 'allow', logLevel: 'deny' }));
 	app.use(function (err, req, res, _next) {
 		if (err instanceof IpDeniedError) {
-			console.log('Error handler', err.message);
 			res.status(401);
 		} else {
-			console.log('Error handler', err);
 			res.status(err.status || 500);
 		}
 
