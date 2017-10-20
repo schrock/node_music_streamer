@@ -39,3 +39,5 @@ jspm_packages
 # visual studio code
 .vscode
 
+# config stuff
+config.local.json

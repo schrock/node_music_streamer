@@ -1,7 +1,23 @@
 'use strict';
 
 // configuration
-var config = require('./config.json');
+const nconf = require('nconf');
+nconf.argv().env().file('./config.local.json');
+nconf.defaults({
+	"baseDir": process.env.HOME + "/Music",
+	"extensions": ["mp3", "m4a", "flac", "ogg", "ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm"],
+	"whitelistIps": [
+		[
+			"127.0.0.0",
+			"127.255.255.255"
+		],
+		[
+			"192.168.0.0",
+			"192.168.255.255"
+		],
+		"::1"
+	]
+});
 
 // 3rd party
 const cluster = require('cluster');
@@ -19,6 +35,10 @@ const Directory = require('./Directory.js');
 const MediaFile = require('./MediaFile.js');
 
 if (cluster.isMaster) {
+	console.log('baseDir: ' + JSON.stringify(nconf.get('baseDir'), null, 4));
+	console.log('extensions: ' + JSON.stringify(nconf.get('extensions'), null, 4));
+	console.log('whitelistIps: ' + JSON.stringify(nconf.get('whitelistIps'), null, 4));
+
 	var numCPUs = os.cpus().length;
 	for (var i = 0; i < numCPUs; i++) {
 		// Create a worker
@@ -31,7 +51,7 @@ if (cluster.isMaster) {
 	});
 } else {
 	// whitelist certain ip addresses
-	app.use(IpFilter(config.whitelistIps, { mode: 'allow', logLevel: 'deny' }));
+	app.use(IpFilter(nconf.get('whitelistIps'), { mode: 'allow', logLevel: 'deny' }));
 	app.use(function (err, req, res, _next) {
 		if (err instanceof IpDeniedError) {
 			res.status(401);
@@ -51,7 +71,7 @@ if (cluster.isMaster) {
 		if (typeof queryPath === 'undefined') {
 			queryPath = '';
 		}
-		var realPath = config.baseDir + '/' + queryPath;
+		var realPath = nconf.get('baseDir') + '/' + queryPath;
 
 		var dirContents;
 		try {
@@ -65,7 +85,7 @@ if (cluster.isMaster) {
 		var dirEntries = [];
 		for (var fileName of dirContents) {
 			var filePath = queryPath + '/' + fileName;
-			var realPath = config.baseDir + '/' + filePath;
+			var realPath = nconf.get('baseDir') + '/' + filePath;
 			var stat = fs.statSync(realPath);
 			if (stat.isDirectory()) {
 				var dirUrl = req.protocol + '://' + req.hostname + ':' + req.socket.localPort + '/dir?path=' + encodeURIComponent(queryPath + '/' + fileName);
@@ -74,7 +94,7 @@ if (cluster.isMaster) {
 				var extIndex = fileName.lastIndexOf('.');
 				if (extIndex > 0) {
 					var ext = fileName.substring(extIndex + 1);
-					if (config.extensions.indexOf(ext) > -1) {
+					if (nconf.get('extensions').indexOf(ext) > -1) {
 						var playUrl = req.protocol + '://' + req.hostname + ':' + req.socket.localPort + '/play?path=' + encodeURIComponent(queryPath + '/' + fileName);
 						dirEntries.push(new MediaFile(fileName, realPath, playUrl));
 					}
@@ -100,7 +120,7 @@ if (cluster.isMaster) {
 		var endByte = range.substring(dashIndex + 1);
 
 		var queryPath = req.query.path;
-		var realPath = config.baseDir + '/' + queryPath;
+		var realPath = nconf.get('baseDir') + '/' + queryPath;
 		var extIndex = realPath.lastIndexOf('.');
 		var ext = null;
 		if (extIndex > 0) {
