@@ -30,6 +30,11 @@ div.progress {
 	white-space: nowrap;
 }
 
+canvas.waveform {
+	height: 25px;
+	width: 100%;
+}
+
 .currentTime {
 	overflow: hidden;
 	text-overflow: ellipsis;
