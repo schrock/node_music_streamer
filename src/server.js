@@ -62,6 +62,11 @@ if (cluster.isMaster) {
 		res.send(err.message);
 	});
 
+	app.use(function(req, res, next) {
+		res.header("Cache-Control", "no-store, no-cache");
+		next();
+	});
+
 	app.get('/hello', function (req, res) {
 		res.send('hello world!');
 	});
