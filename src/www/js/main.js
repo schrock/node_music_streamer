@@ -108,6 +108,11 @@ function drawWaveform() {
 	var canvas = document.querySelector('canvas.waveform');
 	var canvasCtx = canvas.getContext('2d');
 
+	// make internal width and height match css width and height
+	var canvasStyle = window.getComputedStyle(canvas);
+	canvas.width = canvasStyle.width.substring(0, canvasStyle.width.indexOf('px'));
+	canvas.height = canvasStyle.height.substring(0, canvasStyle.height.indexOf('px'));
+
 	analyser.getByteTimeDomainData(dataArray);
 	canvasCtx.fillStyle = window.getComputedStyle(document.body).backgroundColor;
 	canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
