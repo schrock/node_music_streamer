@@ -103,6 +103,7 @@ $(document).ready(function () {
 });
 
 function drawWaveform() {
+	// draw at browser request/refresh rate
 	drawVisual = requestAnimationFrame(drawWaveform);
 
 	var canvas = document.querySelector('canvas.waveform');
@@ -113,11 +114,15 @@ function drawWaveform() {
 	canvas.width = canvasStyle.width.substring(0, canvasStyle.width.indexOf('px'));
 	canvas.height = canvasStyle.height.substring(0, canvasStyle.height.indexOf('px'));
 
-	analyser.getByteTimeDomainData(dataArray);
+	// clear canvas
 	canvasCtx.fillStyle = window.getComputedStyle(document.body).backgroundColor;
 	canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-	canvasCtx.lineWidth = 2;
+	// copy current audio frequency data into array
+	analyser.getByteTimeDomainData(dataArray);
+
+	// draw waveform
+	canvasCtx.lineWidth = 1;
 	canvasCtx.strokeStyle = window.getComputedStyle(document.body).color;
 	canvasCtx.beginPath();
 	var sliceWidth = canvas.width * 1.0 / bufferLength;
