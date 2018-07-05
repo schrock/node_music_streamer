@@ -3,6 +3,10 @@ var playlistIndex = 0;
 var fileData = null;
 var repeat = false;
 
+var analyser;
+var bufferLength;
+var dataArray;
+
 $(document).ready(function () {
 	// get root browser contents
 	browser_bootstrap();
@@ -59,21 +63,83 @@ $(document).ready(function () {
 	$('button.next').click(audioNext);
 	$('button.repeat').click(audioRepeat);
 	// keyboard shortcuts
-	$(document).keypress(function (e) {
-		var key = String.fromCharCode(e.charCode);
+	$(document).keydown(function (e) {
+		var key = e.key;
 		if (key == 'z') {
 			$('button.previous').click();
+			return false;
 		} else if (key == 'x') {
 			$('button.play').click();
+			return false;
 		} else if (key == 'c') {
 			$('button.pause').click();
+			return false;
 		} else if (key == 'v') {
 			$('button.stop').click();
+			return false;
 		} else if (key == 'b') {
 			$('button.next').click();
+			return false;
+		} else if (key == 'ArrowLeft') {
+			audioSeekBackwards(5);
+			return false;
+		} else if (key == 'ArrowRight') {
+			audioSeekForwards(5);
+			return false;
 		}
 	});
+
+	// Web Audio API stuff
+	var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+	var myAudio = document.querySelector('audio.player');
+	var source = audioCtx.createMediaElementSource(myAudio);
+	analyser = audioCtx.createAnalyser();
+	analyser.fftSize = 2048;
+	bufferLength = analyser.frequencyBinCount;
+	dataArray = new Uint8Array(bufferLength);
+	source.connect(analyser);
+	analyser.connect(audioCtx.destination);
+	drawWaveform();
 });
+
+function drawWaveform() {
+	// draw at browser request/refresh rate
+	drawVisual = requestAnimationFrame(drawWaveform);
+
+	var canvas = document.querySelector('canvas.waveform');
+	var canvasCtx = canvas.getContext('2d');
+
+	// make internal width and height match css width and height
+	var canvasStyle = window.getComputedStyle(canvas);
+	canvas.width = canvasStyle.width.substring(0, canvasStyle.width.indexOf('px'));
+	canvas.height = canvasStyle.height.substring(0, canvasStyle.height.indexOf('px'));
+
+	// clear canvas
+	canvasCtx.fillStyle = window.getComputedStyle(document.body).backgroundColor;
+	canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+	// copy current audio frequency data into array
+	analyser.getByteTimeDomainData(dataArray);
+
+	// draw waveform
+	canvasCtx.lineWidth = 1;
+	canvasCtx.strokeStyle = window.getComputedStyle(document.body).color;
+	canvasCtx.beginPath();
+	var sliceWidth = canvas.width * 1.0 / bufferLength;
+	var x = 0;
+	for (var i = 0; i < bufferLength; i++) {
+		var v = dataArray[i] / 128.0;
+		var y = v * canvas.height / 2;
+		if (i === 0) {
+			canvasCtx.moveTo(x, y);
+		} else {
+			canvasCtx.lineTo(x, y);
+		}
+		x += sliceWidth;
+	}
+	canvasCtx.lineTo(canvas.width, canvas.height / 2);
+	canvasCtx.stroke();
+}
 
 function stringifyTime(time) {
 	var minutes = Math.floor(time / 60);
@@ -201,6 +267,20 @@ function audioPause() {
 	} else {
 		$('audio.player').get(0).pause();
 		$('div.progress-bar').removeClass('active');
+	}
+}
+
+function audioSeekBackwards(seconds) {
+	if (!$('audio.player').get(0).paused) {
+		isSeeking = true;
+		$('audio.player').get(0).currentTime -= seconds;
+	}
+}
+
+function audioSeekForwards(seconds) {
+	if (!$('audio.player').get(0).paused) {
+		isSeeking = true;
+		$('audio.player').get(0).currentTime += seconds;
 	}
 }
 
