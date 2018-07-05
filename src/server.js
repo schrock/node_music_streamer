@@ -12,6 +12,10 @@ nconf.defaults({
 			"127.255.255.255"
 		],
 		[
+			"172.16.0.0",
+			"172.31.255.255"
+		],
+		[
 			"192.168.0.0",
 			"192.168.255.255"
 		],
@@ -62,7 +66,7 @@ if (cluster.isMaster) {
 		res.send(err.message);
 	});
 
-	app.use(function(req, res, next) {
+	app.use(function (req, res, next) {
 		res.header("Cache-Control", "no-store, no-cache");
 		next();
 	});
