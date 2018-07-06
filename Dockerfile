@@ -1,4 +1,4 @@
-FROM node:10-jessie
+FROM node:10-slim
 
 # install ffmpeg
 RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list && apt-get update && apt-get install -y ffmpeg
