@@ -125,14 +125,14 @@ function getDir(req, res) {
 		var realPath = nconf.get('baseDir') + '/' + filePath;
 		var stat = fs.statSync(realPath);
 		if (stat.isDirectory()) {
-			var dirUrl = req.protocol + '://' + req.hostname + ':' + req.socket.localPort + '/dir?path=' + encodeURIComponent(queryPath + '/' + fileName);
+			var dirUrl = '/dir?path=' + encodeURIComponent(queryPath + '/' + fileName);
 			dirEntries.push(new Directory(fileName, realPath, dirUrl));
 		} else if (stat.isFile()) {
 			var extIndex = fileName.lastIndexOf('.');
 			if (extIndex > 0) {
 				var ext = fileName.substring(extIndex + 1);
 				if (nconf.get('extensions').indexOf(ext) > -1) {
-					var playUrl = req.protocol + '://' + req.hostname + ':' + req.socket.localPort + '/play?path=' + encodeURIComponent(queryPath + '/' + fileName);
+					var playUrl = '/play?path=' + encodeURIComponent(queryPath + '/' + fileName);
 					dirEntries.push(new MediaFile(fileName, realPath, playUrl));
 				}
 			}
