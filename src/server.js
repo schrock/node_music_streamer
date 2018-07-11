@@ -6,6 +6,8 @@ nconf.argv().env().file('./config.local.json');
 nconf.defaults({
 	"baseDir": process.env.HOME + "/Music",
 	"extensions": ["mp3", "m4a", "flac", "ogg", "ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm"],
+	"httpsCertFile": "./localhost.cert",
+	"httpsKeyFile": "./localhost.key",
 	"whitelistIps": [
 		[
 			"127.0.0.0",
@@ -27,6 +29,7 @@ nconf.defaults({
 const cluster = require('cluster');
 const os = require('os');
 const express = require('express');
+const https = require('https');
 const app = express();
 const IpFilter = require('express-ipfilter').IpFilter;
 const IpDeniedError = require('express-ipfilter').IpDeniedError;
@@ -41,6 +44,8 @@ const MediaFile = require('./MediaFile.js');
 if (cluster.isMaster) {
 	console.log('baseDir: ' + JSON.stringify(nconf.get('baseDir'), null, 4));
 	console.log('extensions: ' + JSON.stringify(nconf.get('extensions'), null, 4));
+	console.log('httpsCertFile: ' + JSON.stringify(nconf.get('httpsCertFile'), null, 4));
+	console.log('httpsKeyFile: ' + JSON.stringify(nconf.get('httpsKeyFile'), null, 4));
 	console.log('whitelistIps: ' + JSON.stringify(nconf.get('whitelistIps'), null, 4));
 
 	var numCPUs = os.cpus().length;
@@ -84,9 +89,18 @@ if (cluster.isMaster) {
 	// serve client-side dependencies
 	app.use('/node_modules', express.static('node_modules'));
 
-	var port = 8080;
-	app.listen(port);
-	console.log('worker running on port ' + port + '...');
+	// setup server
+	var options = {
+		key: fs.readFileSync(nconf.get('httpsKeyFile')),
+		cert: fs.readFileSync(nconf.get('httpsCertFile')),
+		requestCert: false,
+		rejectUnauthorized: false
+	};
+	var port = 8443;
+	var server = https.createServer(options, app);
+	server.listen(port, function () {
+		console.log('worker running on port ' + port + '...');
+	});
 }
 
 function getDir(req, res) {
