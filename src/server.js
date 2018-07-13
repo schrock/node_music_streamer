@@ -168,7 +168,6 @@ function getPlay(req, res) {
 		// return requested portion of original file
 		console.log('streaming original ' + range + ' : ' + queryPath);
 
-		// console.time('fs.statSync');
 		var fileSize = fs.statSync(realPath).size;
 		if (endByte.length == 0) {
 			endByte = fileSize - 1;
@@ -176,15 +175,12 @@ function getPlay(req, res) {
 			endByte = Number(endByte);
 		}
 		endByte = fileSize - 1;
-		// console.timeEnd('fs.statSync');
 
 		res.setHeader('Content-Range', 'bytes ' + startByte + '-' + endByte + '/' + fileSize);
 		res.setHeader('Content-Length', endByte - startByte + 1);
 		res.status(206);
 
-		// console.time('fs.createReadStream');
 		fs.createReadStream(realPath, { start: startByte, end: endByte }).pipe(res, { end: true });
-		// console.timeEnd('fs.createReadStream');
 	} else {
 		// convert to mp3 using ffmpeg
 		console.log('converting to mp3 ' + range + ' : ' + queryPath);
@@ -222,16 +218,29 @@ function getPlay(req, res) {
 			.seek(startTime).duration(endTime - startTime)
 			//.audioFilters('volume=' + gain)
 			.on('start', function () {
-				//console.log('Processing started:  ' + realPath);
+				console.log('ffmpeg processing started: ' + realPath);
 			})
 			.on('error', function (err) {
-				if (!err.toString().includes('Output stream closed')) {
-					console.log('Processing error:    ' + realPath + ' : ' + err.message);
+				console.log('ffmpeg processing error: ' + realPath + ' : ' + err.message);
+				if (!err.toString().includes('SIGKILL')) {
+					console.log('Killing ffmpeg...');
+					command.kill();
 				}
 			})
 			.on('end', function () {
-				//console.log('Processing finished: ' + realPath);
+				console.log('ffmpeg processing finished: ' + realPath);
 			})
 			.pipe(res, { end: true });
+		// // kill ffmpeg after 10 minutes
+		// setTimeout(function () {
+		// 	console.log('ffmpeg running for 10 minutes. Killing ffmpeg...');
+		// 	command.kill();
+		// }, 600000);
+		res.on('finish', function () {
+			console.log('Play response using ffmpeg finished. Killing ffmpeg...');
+			command.kill();
+		});
 	}
+
+
 }
