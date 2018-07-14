@@ -218,17 +218,19 @@ function getPlay(req, res) {
 			.seek(startTime).duration(endTime - startTime)
 			//.audioFilters('volume=' + gain)
 			.on('start', function () {
-				console.log('ffmpeg processing started: ' + realPath);
+				// console.log('ffmpeg processing started: ' + realPath);
 			})
 			.on('error', function (err) {
-				console.log('ffmpeg processing error: ' + realPath + ' : ' + err.message);
+				if (!err.toString().includes('Output stream closed')) {
+					console.log('ffmpeg processing error: ' + realPath + ' : ' + err.message);
+				}
 				if (!err.toString().includes('SIGKILL')) {
-					console.log('Killing ffmpeg...');
+					// console.log('Killing ffmpeg...');
 					command.kill();
 				}
 			})
 			.on('end', function () {
-				console.log('ffmpeg processing finished: ' + realPath);
+				// console.log('ffmpeg processing finished: ' + realPath);
 			})
 			.pipe(res, { end: true });
 		// // kill ffmpeg after 10 minutes
@@ -237,7 +239,7 @@ function getPlay(req, res) {
 		// 	command.kill();
 		// }, 600000);
 		res.on('finish', function () {
-			console.log('Play response using ffmpeg finished. Killing ffmpeg...');
+			// console.log('Play response using ffmpeg finished. Killing ffmpeg...');
 			command.kill();
 		});
 	}
