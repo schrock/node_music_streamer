@@ -18,7 +18,8 @@ module.exports = class MediaFile extends DirEntry {
 		var artist = '';
 		var album = '';
 		var duration = 1200;
-		var gain = '0dB';
+		var replaygainTrack = '';
+		var replaygainAlbum = '';
 		try {
 			var metadata = ffprobe(path);
 			// console.log(metadata);
@@ -84,18 +85,19 @@ module.exports = class MediaFile extends DirEntry {
 				}
 				// gain
 				if (tags.replaygain_track_gain != null) {
-					gain = tags.replaygain_track_gain;
+					replaygainTrack = tags.replaygain_track_gain;
 				}
 				if (tags.REPLAYGAIN_TRACK_GAIN != null) {
-					gain = tags.REPLAYGAIN_TRACK_GAIN;
+					replaygainTrack = tags.REPLAYGAIN_TRACK_GAIN;
 				}
 				if (tags.replaygain_album_gain != null) {
-					gain = tags.replaygain_album_gain;
+					replaygainAlbum = tags.replaygain_album_gain;
 				}
 				if (tags.REPLAYGAIN_ALBUM_GAIN != null) {
-					gain = tags.REPLAYGAIN_ALBUM_GAIN;
+					replaygainAlbum = tags.REPLAYGAIN_ALBUM_GAIN;
 				}
-				gain = gain.replace(/\s/g, '');
+				replaygainTrack = replaygainTrack.replace(/\s/g, '');
+				replaygainAlbum = replaygainAlbum.replace(/\s/g, '');
 			}
 			if (disc.length > 0) {
 				if (track.length < 2) {
@@ -103,7 +105,7 @@ module.exports = class MediaFile extends DirEntry {
 				}
 				track = disc + '.' + track;
 			}
-			playUrl += '&duration=' + duration + '&gain=' + gain;
+			playUrl += '&duration=' + duration;
 		} catch (err) {
 			console.log('Error while reading metadata for ' + path + '\n' + err);
 		}
@@ -122,7 +124,8 @@ module.exports = class MediaFile extends DirEntry {
 			details.artist = artist;
 			details.album = album;
 			details.duration = duration;
-			details.gain = gain;
+			details.replaygainTrack = replaygainTrack;
+			details.replaygainAlbum = replaygainAlbum;
 			this.tracks.push(details);
 		}
 	}
