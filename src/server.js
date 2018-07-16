@@ -120,6 +120,7 @@ function getDir(req, res) {
 	}
 
 	var dirEntries = [];
+	var initPromises = [];
 	for (var fileName of dirContents) {
 		var filePath = queryPath + '/' + fileName;
 		var realPath = nconf.get('baseDir') + '/' + filePath;
@@ -133,13 +134,21 @@ function getDir(req, res) {
 				var ext = fileName.substring(extIndex + 1);
 				if (nconf.get('extensions').indexOf(ext) > -1) {
 					var playUrl = '/play?path=' + encodeURIComponent(queryPath + '/' + fileName);
-					dirEntries.push(new MediaFile(fileName, realPath, playUrl));
+					var mediaFile = new MediaFile(fileName, realPath, playUrl);
+					initPromises.push(mediaFile.init());
 				}
 			}
 		}
 	}
-	res.contentType('application/json');
-	res.send(JSON.stringify(dirEntries, null, 4));
+	Promise.all(initPromises).then(function (mediaFiles) {
+		dirEntries = dirEntries.concat(mediaFiles);
+		res.contentType('application/json');
+		res.send(JSON.stringify(dirEntries, null, 4));
+	}).catch(function (err) {
+		res.status(500);
+		res.contentType('text/plain');
+		res.send('Failed to get file metadata. See server log.');
+	});
 }
 
 function getPlay(req, res) {
