@@ -39,5 +39,7 @@ jspm_packages
 # visual studio code
 .vscode
 
-# config stuff
+# config & https certs
 config.local.json
+localhost.cert
+localhost.key

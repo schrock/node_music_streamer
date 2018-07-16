@@ -6,6 +6,8 @@ nconf.argv().env().file('./config.local.json');
 nconf.defaults({
 	"baseDir": process.env.HOME + "/Music",
 	"extensions": ["mp3", "m4a", "flac", "ogg", "ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm"],
+	"httpsCertFile": "./localhost.cert",
+	"httpsKeyFile": "./localhost.key",
 	"whitelistIps": [
 		[
 			"127.0.0.0",
@@ -27,6 +29,7 @@ nconf.defaults({
 const cluster = require('cluster');
 const os = require('os');
 const express = require('express');
+const https = require('https');
 const app = express();
 const IpFilter = require('express-ipfilter').IpFilter;
 const IpDeniedError = require('express-ipfilter').IpDeniedError;
@@ -41,6 +44,8 @@ const MediaFile = require('./MediaFile.js');
 if (cluster.isMaster) {
 	console.log('baseDir: ' + JSON.stringify(nconf.get('baseDir'), null, 4));
 	console.log('extensions: ' + JSON.stringify(nconf.get('extensions'), null, 4));
+	console.log('httpsCertFile: ' + JSON.stringify(nconf.get('httpsCertFile'), null, 4));
+	console.log('httpsKeyFile: ' + JSON.stringify(nconf.get('httpsKeyFile'), null, 4));
 	console.log('whitelistIps: ' + JSON.stringify(nconf.get('whitelistIps'), null, 4));
 
 	var numCPUs = os.cpus().length;
@@ -84,9 +89,18 @@ if (cluster.isMaster) {
 	// serve client-side dependencies
 	app.use('/node_modules', express.static('node_modules'));
 
-	var port = 8080;
-	app.listen(port);
-	console.log('worker running on port ' + port + '...');
+	// setup server
+	var options = {
+		key: fs.readFileSync(nconf.get('httpsKeyFile')),
+		cert: fs.readFileSync(nconf.get('httpsCertFile')),
+		requestCert: false,
+		rejectUnauthorized: false
+	};
+	var port = 8443;
+	var server = https.createServer(options, app);
+	server.listen(port, function () {
+		console.log('worker running on port ' + port + '...');
+	});
 }
 
 function getDir(req, res) {
@@ -106,26 +120,35 @@ function getDir(req, res) {
 	}
 
 	var dirEntries = [];
+	var initPromises = [];
 	for (var fileName of dirContents) {
 		var filePath = queryPath + '/' + fileName;
 		var realPath = nconf.get('baseDir') + '/' + filePath;
 		var stat = fs.statSync(realPath);
 		if (stat.isDirectory()) {
-			var dirUrl = req.protocol + '://' + req.hostname + ':' + req.socket.localPort + '/dir?path=' + encodeURIComponent(queryPath + '/' + fileName);
+			var dirUrl = '/dir?path=' + encodeURIComponent(queryPath + '/' + fileName);
 			dirEntries.push(new Directory(fileName, realPath, dirUrl));
 		} else if (stat.isFile()) {
 			var extIndex = fileName.lastIndexOf('.');
 			if (extIndex > 0) {
 				var ext = fileName.substring(extIndex + 1);
 				if (nconf.get('extensions').indexOf(ext) > -1) {
-					var playUrl = req.protocol + '://' + req.hostname + ':' + req.socket.localPort + '/play?path=' + encodeURIComponent(queryPath + '/' + fileName);
-					dirEntries.push(new MediaFile(fileName, realPath, playUrl));
+					var playUrl = '/play?path=' + encodeURIComponent(queryPath + '/' + fileName);
+					var mediaFile = new MediaFile(fileName, realPath, playUrl);
+					initPromises.push(mediaFile.init());
 				}
 			}
 		}
 	}
-	res.contentType('application/json');
-	res.send(JSON.stringify(dirEntries, null, 4));
+	Promise.all(initPromises).then(function (mediaFiles) {
+		dirEntries = dirEntries.concat(mediaFiles);
+		res.contentType('application/json');
+		res.send(JSON.stringify(dirEntries, null, 4));
+	}).catch(function (err) {
+		res.status(500);
+		res.contentType('text/plain');
+		res.send('Failed to get file metadata. See server log.');
+	});
 }
 
 function getPlay(req, res) {
@@ -150,11 +173,12 @@ function getPlay(req, res) {
 		ext = realPath.substring(extIndex + 1);
 	}
 
-	if (ext != null && ext == 'mp3') {
+	// disable for now
+	// if (ext != null && ext == 'mp3') {
+	if (false) {
 		// return requested portion of original file
 		console.log('streaming original ' + range + ' : ' + queryPath);
 
-		// console.time('fs.statSync');
 		var fileSize = fs.statSync(realPath).size;
 		if (endByte.length == 0) {
 			endByte = fileSize - 1;
@@ -162,21 +186,17 @@ function getPlay(req, res) {
 			endByte = Number(endByte);
 		}
 		endByte = fileSize - 1;
-		// console.timeEnd('fs.statSync');
 
 		res.setHeader('Content-Range', 'bytes ' + startByte + '-' + endByte + '/' + fileSize);
 		res.setHeader('Content-Length', endByte - startByte + 1);
 		res.status(206);
 
-		// console.time('fs.createReadStream');
 		fs.createReadStream(realPath, { start: startByte, end: endByte }).pipe(res, { end: true });
-		// console.timeEnd('fs.createReadStream');
 	} else {
 		// convert to mp3 using ffmpeg
 		console.log('converting to mp3 ' + range + ' : ' + queryPath);
 
 		var track_index = Number(req.query.track_index);
-		var gain = req.query.gain;
 
 		var duration = req.query.duration;
 		var fileSize = Math.floor(duration * (256 * 1000 / 8));
@@ -206,18 +226,33 @@ function getPlay(req, res) {
 		command.audioCodec('libmp3lame').audioChannels(2)
 			.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo()
 			.seek(startTime).duration(endTime - startTime)
-			//.audioFilters('volume=' + gain)
+			.audioFilters('volume=replaygain=album')
 			.on('start', function () {
-				//console.log('Processing started:  ' + realPath);
+				// console.log('ffmpeg processing started: ' + realPath);
 			})
 			.on('error', function (err) {
 				if (!err.toString().includes('Output stream closed')) {
-					console.log('Processing error:    ' + realPath + ' : ' + err.message);
+					console.log('ffmpeg processing error: ' + realPath + ' : ' + err.message);
+				}
+				if (!err.toString().includes('SIGKILL')) {
+					// console.log('Killing ffmpeg...');
+					command.kill();
 				}
 			})
 			.on('end', function () {
-				//console.log('Processing finished: ' + realPath);
+				// console.log('ffmpeg processing finished: ' + realPath);
 			})
 			.pipe(res, { end: true });
+		// // kill ffmpeg after 10 minutes
+		// setTimeout(function () {
+		// 	console.log('ffmpeg running for 10 minutes. Killing ffmpeg...');
+		// 	command.kill();
+		// }, 600000);
+		res.on('finish', function () {
+			// console.log('Play response using ffmpeg finished. Killing ffmpeg...');
+			command.kill();
+		});
 	}
+
+
 }
