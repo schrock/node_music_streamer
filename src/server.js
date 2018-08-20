@@ -173,9 +173,8 @@ function getPlay(req, res) {
 		ext = realPath.substring(extIndex + 1);
 	}
 
-	// disable for now
-	// if (ext != null && ext == 'mp3') {
-	if (false) {
+	// return original file if mp3
+	if (ext != null && ext == 'mp3') {
 		// return requested portion of original file
 		console.log('streaming original ' + range + ' : ' + queryPath);
 
@@ -226,7 +225,7 @@ function getPlay(req, res) {
 		command.audioCodec('libmp3lame').audioChannels(2)
 			.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo()
 			.seek(startTime).duration(endTime - startTime)
-			.audioFilters('volume=replaygain=album')
+			//.audioFilters('volume=replaygain=album')
 			.on('start', function () {
 				// console.log('ffmpeg processing started: ' + realPath);
 			})
