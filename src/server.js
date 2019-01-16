@@ -7,22 +7,7 @@ nconf.defaults({
 	"baseDir": process.env.HOME + "/Music",
 	"extensions": ["mp3", "m4a", "flac", "ogg", "ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm"],
 	"httpsCertFile": "./localhost.cert",
-	"httpsKeyFile": "./localhost.key",
-	"whitelistIps": [
-		[
-			"127.0.0.0",
-			"127.255.255.255"
-		],
-		[
-			"172.16.0.0",
-			"172.31.255.255"
-		],
-		[
-			"192.168.0.0",
-			"192.168.255.255"
-		],
-		"::1"
-	]
+	"httpsKeyFile": "./localhost.key"
 });
 
 // 3rd party
@@ -31,8 +16,6 @@ const os = require('os');
 const express = require('express');
 const https = require('https');
 const app = express();
-const IpFilter = require('express-ipfilter').IpFilter;
-const IpDeniedError = require('express-ipfilter').IpDeniedError;
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 
@@ -46,7 +29,6 @@ if (cluster.isMaster) {
 	console.log('extensions: ' + JSON.stringify(nconf.get('extensions'), null, 4));
 	console.log('httpsCertFile: ' + JSON.stringify(nconf.get('httpsCertFile'), null, 4));
 	console.log('httpsKeyFile: ' + JSON.stringify(nconf.get('httpsKeyFile'), null, 4));
-	console.log('whitelistIps: ' + JSON.stringify(nconf.get('whitelistIps'), null, 4));
 
 	var numCPUs = os.cpus().length;
 	for (var i = 0; i < numCPUs; i++) {
@@ -59,18 +41,6 @@ if (cluster.isMaster) {
 		cluster.fork();
 	});
 } else {
-	// whitelist certain ip addresses
-	app.use(IpFilter(nconf.get('whitelistIps'), { mode: 'allow', logLevel: 'deny' }));
-	app.use(function (err, req, res, _next) {
-		if (err instanceof IpDeniedError) {
-			res.status(401);
-		} else {
-			res.status(err.status || 500);
-		}
-
-		res.send(err.message);
-	});
-
 	app.use(function (req, res, next) {
 		res.header("Cache-Control", "no-store, no-cache");
 		next();
