@@ -5,11 +5,11 @@
   "main": "server.js",
   "dependencies": {
     "bootstrap": "^3.3.7",
-    "express": "^4.16.3",
+    "express": "^4.16.4",
     "fluent-ffmpeg": "^2.1.0",
-    "jquery": "^3.1.1",
+    "jquery": "^3.4.0",
     "jquery.scrollintoview": "^1.9.4",
-    "nconf": "^0.8.5",
+    "nconf": "^0.10.0",
     "optimal-select": "^4.0.1"
   },
   "devDependencies": {},
