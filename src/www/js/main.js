@@ -257,16 +257,16 @@ function audioPlay() {
 	$('audio.player').get(0).load();
 	// start playback
 	$('audio.player').get(0).play();
-	$('div.progress-bar').addClass('active');
+	$('div.progress-bar').addClass('progress-bar-animated');
 }
 
 function audioPause() {
 	if ($('audio.player').get(0).paused) {
 		$('audio.player').get(0).play();
-		$('div.progress-bar').addClass('active');
+		$('div.progress-bar').addClass('progress-bar-animated');
 	} else {
 		$('audio.player').get(0).pause();
-		$('div.progress-bar').removeClass('active');
+		$('div.progress-bar').removeClass('progress-bar-animated');
 	}
 }
 
@@ -314,8 +314,10 @@ function audioRepeat() {
 	if (repeat) {
 		repeat = false;
 		$('button.repeat').removeClass('active');
+		// $('button.repeat').css('filter', 'invert(0%)');
 	} else {
 		repeat = true;
 		$('button.repeat').addClass('active');
+		// $('button.repeat').css('filter', 'invert(100%)');
 	}
 }

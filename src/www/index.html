@@ -7,9 +7,11 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>node_music_streamer</title>
 	<link rel="shortcut icon" type="image/png" href="icon/favicon.png">
-	<link rel="stylesheet" type="text/css" href="css/bootstrap-slate.css">
+	<link rel="stylesheet" type="text/css" href="node_modules/bootswatch/dist/darkly/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<script src="node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="node_modules/popper.js/dist/popper.min.js"></script>
 	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="node_modules/jquery.scrollintoview/jquery.scrollintoview.js"></script>
 	<script src="node_modules/optimal-select/dist/optimal-select.min.js"></script>
@@ -27,20 +29,20 @@
 					<div class="col-md-12 no-gutter">
 						<audio class="player"></audio>
 						<div class="progress">
-							<div class="progress-bar progress-bar-info progress-bar-striped active"></div>
+							<div class="progress-bar progress-bar-info progress-bar-striped progress-bar-animated"></div>
 						</div>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-3 no-gutter">
 						<div class="btn-group btn-group-sm">
-							<button class="btn btn-default previous"><span class="glyphicon glyphicon-step-backward"></span></button>
-							<button class="btn btn-default play"><span class="glyphicon glyphicon-play"></span></button>
-							<button class="btn btn-default pause"><span class="glyphicon glyphicon-pause"></span></button>
-							<button class="btn btn-default stop"><span class="glyphicon glyphicon-stop"></span></button>
-							<button class="btn btn-default next"><span class="glyphicon glyphicon-step-forward"></span></button>
+							<button class="btn btn-primary shadow-none previous"><span class="oi oi-media-step-backward"></span></button>
+							<button class="btn btn-primary shadow-none play"><span class="oi oi-media-play"></span></button>
+							<button class="btn btn-primary shadow-none pause"><span class="oi oi-media-pause"></span></button>
+							<button class="btn btn-primary shadow-none stop"><span class="oi oi-media-stop"></span></button>
+							<button class="btn btn-primary shadow-none next"><span class="oi oi-media-step-forward"></span></button>
 						</div>
-						<button class="btn btn-default btn-sm repeat"><span class="glyphicon glyphicon-repeat"></span></button>
+						<button class="btn btn-primary shadow-none btn-sm repeat"><span class="oi oi-loop-square"></span></button>
 					</div>
 					<div class="col-md-4 no-gutter">
 						<p class="currentSong text-left"></p>
