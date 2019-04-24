@@ -246,8 +246,8 @@ function audioPlay() {
 	audioStop();
 	fileData = $('table.playlist tbody tr').eq(playlistIndex).data('file');
 	// highlight in playlist
-	$('table.playlist tbody tr').removeClass('info');
-	$('table.playlist tbody tr').eq(playlistIndex).addClass('info');
+	$('table.playlist tbody tr').removeClass('table-info');
+	$('table.playlist tbody tr').eq(playlistIndex).addClass('table-info');
 	$('table.playlist tbody tr').eq(playlistIndex).scrollintoview();
 	// change current song label
 	$('.currentSong').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + fileData.title);
