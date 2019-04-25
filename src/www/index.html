@@ -19,6 +19,51 @@
 </head>
 
 <body>
+	<!-- hidden elements -->
+	<audio class="player"></audio>
+
+	<div class="container-fluid">
+
+		<div class="row sticky-top">
+			<div class="col-12 progress progress-bar progress-bar-info progress-bar-striped progress-bar-animated">
+			</div>
+
+			<div class="col-3">
+				<div class="btn-group btn-group-sm">
+					<button class="btn btn-primary shadow-none previous"><span class="oi oi-media-step-backward"></span></button>
+					<button class="btn btn-primary shadow-none play"><span class="oi oi-media-play"></span></button>
+					<button class="btn btn-primary shadow-none pause"><span class="oi oi-media-pause"></span></button>
+					<button class="btn btn-primary shadow-none stop"><span class="oi oi-media-stop"></span></button>
+					<button class="btn btn-primary shadow-none next"><span class="oi oi-media-step-forward"></span></button>
+				</div>
+				<button class="btn btn-primary shadow-none btn-sm repeat"><span class="oi oi-loop-square"></span></button>
+			</div>
+			<div class="col-4 currentSong"></div>
+			<div class="col-2"><canvas class="waveform"></canvas></div>
+			<div class="col-3 currentTime"></div>
+		</div>
+
+		<div class="row">
+			<div class="col-1">
+				<button class="btn btn-secondary shadow-none btn-sm upDir"><span class="oi oi-arrow-thick-top"></span></button>
+			</div>
+			<div class="col-11 currentDir"></div>
+		</div>
+
+		<div class="row">
+			<div class="col-12 browser"></div>
+		</div>
+
+		<div class="row">
+			<div class="col-12 loading_message alert alert-info">Loading playlist contents...</div>
+		</div>
+
+	</div>
+
+
+
+
+	<!-- ORIGINAL
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-3 no-gutter">
@@ -79,6 +124,7 @@
 			</div>
 		</div>
 	</div>
+	-->
 </body>
 
 </html>

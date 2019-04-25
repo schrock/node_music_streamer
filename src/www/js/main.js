@@ -158,12 +158,12 @@ function stringifyTime(time) {
 function browser_bootstrap() {
 	$.get('/dir?path=', function (data, status) {
 		if (status == 'success') {
-			handleDirContents('div.browser', data);
+			handleDirContents(null, data);
 		}
 	});
 }
 
-function handleDirContents(parent, dirEntries) {
+function handleDirContents(currentDir, dirEntries) {
 	var dirs = [];
 	var files = [];
 	for (var dirEntry of dirEntries) {
@@ -173,8 +173,58 @@ function handleDirContents(parent, dirEntries) {
 			files.push(dirEntry);
 		}
 	}
-	handleDirs(parent, dirs);
-	handleFiles(files);
+
+	// update go up directory functionality
+	if (currentDir == null) {
+		$('.currentDir').html('/');
+	} else {
+		$('.currentDir').html(currentDir.name);
+	}
+
+	// clear browser contents
+	$('.browser').empty();
+
+	// place dirs first in browser
+	for (var dir of dirs) {
+		$('.browser').append('<div class="row dir"></div>');
+		$('.browser .dir').last().append('<div class="col">' + dir.name + '</div>');
+		$('.browser .dir').last().data('dir', dir);
+	}
+	$('.browser .dir').click(function () {
+		var element = this;
+		var dir = $(element).data('dir');
+		console.log('clicked dir ' + JSON.stringify(dir));
+		// show loading message
+		$('.browser').hide();
+		$('.loading_message').show();
+		$.get(dir.dirUrl, function (data, status) {
+			if (status == 'success') {
+				handleDirContents(dir, data);
+			}
+			// hide loading message
+			$('.loading_message').hide();
+			$('.browser').show();
+		});
+	});
+
+	// place files after dirs in browser
+	for (var file of files) {
+		for (var track of file.tracks) {
+			$('.browser').append('<div class="row track"></div>');
+			$('.browser .track').last().append('<div class="col-1">' + track.track + '</div>');
+			$('.browser .track').last().append('<div class="col-10">' + track.title + '</div>');
+			$('.browser .track').last().append('<div class="col-1">' + stringifyTime(track.duration) + '</div>');
+			$('.browser .track').last().data('track', track);
+		}
+	}
+	$('.browser .track').click(function () {
+		var element = this;
+		var track = $(element).data('track');
+		console.log('clicked track ' + JSON.stringify(track));
+	});
+
+	//handleDirs(parent, dirs);
+	//handleFiles(files);
 }
 
 function handleDirs(parent, dirs) {

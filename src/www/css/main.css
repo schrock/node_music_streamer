@@ -1,3 +1,20 @@
+div {
+	outline: solid 1px white;
+}
+
+body {
+	cursor: default;
+}
+
+.loading_message {
+	display: none;
+}
+
+.waveform {
+	height: 30px;
+}
+
+/** ORIGINAL
 body {
 	cursor: default;
 	user-select: none;
@@ -80,3 +97,4 @@ th.duration, td.duration {
 .loading_message {
 	display: none;
 }
+/**
