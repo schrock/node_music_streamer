@@ -1,6 +1,8 @@
 var playlist = [];
 var playlistIndex = 0;
 
+var dirStack = [];
+
 var isSeeking = false;
 var repeat = false;
 
@@ -10,7 +12,7 @@ var dataArray;
 
 $(document).ready(function () {
 	// get root browser contents
-	browser_bootstrap();
+	upDir();
 	// hookup progress bar
 	$('audio.player').on('timeupdate', function () {
 		var currentTime = $('audio.player').get(0).currentTime;
@@ -155,12 +157,22 @@ function stringifyTime(time) {
 	}
 }
 
-function browser_bootstrap() {
-	$.get('/dir?path=', function (data, status) {
-		if (status == 'success') {
-			handleDirContents(null, data);
-		}
-	});
+function upDir() {
+	dirStack.pop();
+	if (dirStack.length == 0) {
+		$.get('/dir?path=', function (data, status) {
+			if (status == 'success') {
+				handleDirContents(null, data);
+			}
+		});
+	} else {
+		var dir = dirStack[dirStack.length - 1];
+		$.get(dir.dirUrl, function (data, status) {
+			if (status == 'success') {
+				handleDirContents(dir, data);
+			}
+		});
+	}
 }
 
 function handleDirContents(currentDir, dirEntries) {
@@ -176,7 +188,7 @@ function handleDirContents(currentDir, dirEntries) {
 
 	// update go up directory functionality
 	if (currentDir == null) {
-		$('.currentDir').html('/');
+		$('.currentDir').empty();
 	} else {
 		$('.currentDir').html(currentDir.name);
 	}
@@ -198,6 +210,7 @@ function handleDirContents(currentDir, dirEntries) {
 		$('.loading_message').show();
 		$.get(dir.dirUrl, function (data, status) {
 			if (status == 'success') {
+				dirStack.push(dir);
 				handleDirContents(dir, data);
 			}
 			// hide loading message
@@ -232,10 +245,6 @@ function handleDirContents(currentDir, dirEntries) {
 		audioPlay();
 		return false;
 	});
-}
-
-function upDir() {
-
 }
 
 function audioStop() {

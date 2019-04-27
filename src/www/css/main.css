@@ -2,8 +2,17 @@ div {
 	outline: solid 1px white;
 }
 
+.outlined {
+	outline: solid 1px white;
+}
+
 body {
 	cursor: default;
+}
+
+.progress {
+	cursor: pointer;
+	height: 25px;
 }
 
 .loading_message {
@@ -12,6 +21,13 @@ body {
 
 .waveform {
 	height: 30px;
+}
+
+.no-gutters {
+	margin-right: 0;
+	margin-left: 0;
+	padding-right: 0;
+	padding-left: 0;
 }
 
 /** ORIGINAL
