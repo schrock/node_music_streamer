@@ -68,19 +68,19 @@ $(document).ready(function () {
 	$(document).keydown(function (e) {
 		var key = e.key;
 		if (key == 'z') {
-			$('button.previous').click();
+			audioPrevious();
 			return false;
 		} else if (key == 'x') {
-			$('button.play').click();
+			audioPlay();
 			return false;
 		} else if (key == 'c') {
-			$('button.pause').click();
+			audioPause();
 			return false;
 		} else if (key == 'v') {
-			$('button.stop').click();
+			audioStop();
 			return false;
 		} else if (key == 'b') {
-			$('button.next').click();
+			audioNext();
 			return false;
 		} else if (key == 'ArrowLeft') {
 			audioSeekBackwards(5);
@@ -158,11 +158,18 @@ function stringifyTime(time) {
 }
 
 function upDir() {
+	// show loading message
+	$('.browser').hide();
+	$('.loading_message').show();
+
 	dirStack.pop();
 	if (dirStack.length == 0) {
 		$.get('/dir?path=', function (data, status) {
 			if (status == 'success') {
 				handleDirContents(null, data);
+				// hide loading message
+				$('.loading_message').hide();
+				$('.browser').show();
 			}
 		});
 	} else {
@@ -170,6 +177,9 @@ function upDir() {
 		$.get(dir.dirUrl, function (data, status) {
 			if (status == 'success') {
 				handleDirContents(dir, data);
+				// hide loading message
+				$('.loading_message').hide();
+				$('.browser').show();
 			}
 		});
 	}
@@ -198,8 +208,9 @@ function handleDirContents(currentDir, dirEntries) {
 
 	// place dirs first in browser
 	for (var dir of dirs) {
-		$('.browser').append('<div class="row dir"></div>');
-		$('.browser .dir').last().append('<div class="col">' + dir.name + '</div>');
+		$('.browser').append('<div class="row border-top dir"></div>');
+		$('.browser .dir').last().append('<div class="col-1"><span class="oi oi-folder"></span></div>');
+		$('.browser .dir').last().append('<div class="col-11">' + dir.name + '</div>');
 		$('.browser .dir').last().data('dir', dir);
 	}
 	$('.browser .dir').click(function () {
@@ -212,10 +223,10 @@ function handleDirContents(currentDir, dirEntries) {
 			if (status == 'success') {
 				dirStack.push(dir);
 				handleDirContents(dir, data);
+				// hide loading message
+				$('.loading_message').hide();
+				$('.browser').show();
 			}
-			// hide loading message
-			$('.loading_message').hide();
-			$('.browser').show();
 		});
 		return false;
 	});
@@ -223,7 +234,7 @@ function handleDirContents(currentDir, dirEntries) {
 	// place files after dirs in browser
 	for (var file of files) {
 		for (var track of file.tracks) {
-			$('.browser').append('<div class="row track"></div>');
+			$('.browser').append('<div class="row border-top track"></div>');
 			$('.browser .track').last().append('<div class="col-1">' + track.track + '</div>');
 			$('.browser .track').last().append('<div class="col-10">' + track.title + '</div>');
 			$('.browser .track').last().append('<div class="col-1">' + stringifyTime(track.duration) + '</div>');
@@ -250,6 +261,7 @@ function handleDirContents(currentDir, dirEntries) {
 function audioStop() {
 	$('audio.player').get(0).pause();
 	$('audio.player').get(0).currentTime = 0;
+	$('button.pause').html('<span class="oi oi-media-play"></span>');
 	$('div.progress-bar').removeClass('progress-bar-animated');
 	$('div.progress-bar').width('0%');
 }
@@ -274,15 +286,18 @@ function audioPlay() {
 	$('audio.player').get(0).load();
 	// start playback
 	$('audio.player').get(0).play();
+	$('button.pause').html('<span class="oi oi-media-pause"></span>');
 	$('div.progress-bar').addClass('progress-bar-animated');
 }
 
 function audioPause() {
 	if ($('audio.player').get(0).paused) {
 		$('audio.player').get(0).play();
+		$('button.pause').html('<span class="oi oi-media-pause"></span>');
 		$('div.progress-bar').addClass('progress-bar-animated');
 	} else {
 		$('audio.player').get(0).pause();
+		$('button.pause').html('<span class="oi oi-media-play"></span>');
 		$('div.progress-bar').removeClass('progress-bar-animated');
 	}
 }
@@ -329,10 +344,10 @@ function audioRepeat() {
 	if (repeat) {
 		repeat = false;
 		$('button.repeat').removeClass('active');
-		// $('button.repeat').css('filter', 'invert(0%)');
+		//$('button.repeat').css('filter', 'invert(0%)');
 	} else {
 		repeat = true;
 		$('button.repeat').addClass('active');
-		// $('button.repeat').css('filter', 'invert(100%)');
+		//$('button.repeat').css('filter', 'invert(100%)');
 	}
 }
