@@ -20,7 +20,8 @@ $(document).ready(function () {
 		$('div.progress-bar').width(currentTime / duration * 100 + '%');
 		// update time display
 		$('div.progress-bar').html(stringifyTime(currentTime));
-		$('.currentTime').html(playlist[playlistIndex].replaygainAlbum + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + playlist[playlistIndex].format + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + stringifyTime(currentTime) + ' / ' + stringifyTime(duration) + '&nbsp;');
+		$('.currentTime').html(stringifyTime(currentTime) + '&nbsp;/&nbsp;' + stringifyTime(duration));
+		$('.currentInfo').html(playlist[playlistIndex].replaygainAlbum + '&nbsp;' + playlist[playlistIndex].format);
 	});
 	$('div.progress').click(function (e) {
 		isSeeking = true;
@@ -209,8 +210,7 @@ function handleDirContents(currentDir, dirEntries) {
 	// place dirs first in browser
 	for (var dir of dirs) {
 		$('.browser').append('<div class="row border-top dir"></div>');
-		$('.browser .dir').last().append('<div class="col-1"><span class="oi oi-folder"></span></div>');
-		$('.browser .dir').last().append('<div class="col-11">' + dir.name + '</div>');
+		$('.browser .dir').last().append('<div class="col-12"><span class="oi oi-folder"></span>&nbsp;' + dir.name + '</div>');
 		$('.browser .dir').last().data('dir', dir);
 	}
 	$('.browser .dir').click(function () {
@@ -235,9 +235,9 @@ function handleDirContents(currentDir, dirEntries) {
 	for (var file of files) {
 		for (var track of file.tracks) {
 			$('.browser').append('<div class="row border-top track"></div>');
-			$('.browser .track').last().append('<div class="col-1">' + track.track + '</div>');
-			$('.browser .track').last().append('<div class="col-10">' + track.title + '</div>');
-			$('.browser .track').last().append('<div class="col-1">' + stringifyTime(track.duration) + '</div>');
+			$('.browser .track').last().append('<div class="col-1 d-none d-md-flex">' + track.track + '</div>');
+			$('.browser .track').last().append('<div class="col-12 col-md-10">' + track.title + '</div>');
+			$('.browser .track').last().append('<div class="col-1 d-none d-md-flex">' + stringifyTime(track.duration) + '</div>');
 			$('.browser .track').last().data('track', track);
 		}
 	}

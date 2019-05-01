@@ -6,6 +6,13 @@ body {
 	cursor: default;
 }
 
+div {
+	font-size: 1.75rem;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
 .progress {
 	cursor: pointer;
 	height: 25px;
@@ -24,7 +31,7 @@ body {
 }
 
 .waveform {
-	height: 30px;
+	height: 25px;
 	width: 100%;
 }
 
