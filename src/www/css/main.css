@@ -15,8 +15,17 @@ body {
 	display: none;
 }
 
+.dir {
+	cursor: pointer;
+}
+
+.track {
+	cursor: pointer;
+}
+
 .waveform {
 	height: 30px;
+	width: 100%;
 }
 
 .no-gutters {
