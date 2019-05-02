@@ -12,7 +12,6 @@
     "jquery.scrollintoview": "^1.9.4",
     "nconf": "^0.10.0",
     "open-iconic": "^1.1.1",
-    "optimal-select": "^4.0.1",
     "popper.js": "^1.14.7"
   },
   "devDependencies": {},

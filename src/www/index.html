@@ -10,12 +10,6 @@
 	<link rel="stylesheet" type="text/css" href="node_modules/bootswatch/dist/darkly/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
-	<script src="node_modules/jquery/dist/jquery.min.js"></script>
-	<script src="node_modules/popper.js/dist/popper.min.js"></script>
-	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="node_modules/jquery.scrollintoview/jquery.scrollintoview.js"></script>
-	<script src="node_modules/optimal-select/dist/optimal-select.min.js"></script>
-	<script src="js/main.js"></script>
 </head>
 
 <body>
@@ -39,21 +33,28 @@
 			</div>
 
 			<div class="col-12">
-				<div class="row justify-content-around">
-					<button class="col-2 col-md-1 btn btn-primary btn-lg shadow-none previous"><span class="oi oi-media-step-backward"></span></button>
-					<button class="col-2 col-md-1 btn btn-primary btn-lg shadow-none pause"><span class="oi oi-media-play"></span></button>
-					<button class="col-2 col-md-1 btn btn-primary btn-lg shadow-none next"><span class="oi oi-media-step-forward"></span></button>
-					<button class="col-1 d-none d-md-block btn btn-primary btn-lg shadow-none repeat"><span class="oi oi-loop-square"></span></button>
+				<div class="row justify-content-center">
+					<div class="col-3 col-md-1 no-gutters">
+						<button class="btn btn-lg btn-primary shadow-none rounded-pill previous"><span class="oi oi-media-step-backward"></span></button>
+					</div>
+					<div class="col-3 col-md-1 no-gutters">
+						<button class="btn btn-lg btn-primary shadow-none rounded-pill pause"><span class="oi oi-media-play"></span></button>
+					</div>
+					<div class="col-3 col-md-1 no-gutters">
+						<button class="btn btn-lg btn-primary shadow-none rounded-pill next"><span class="oi oi-media-step-forward"></span></button>
+					</div>
+					<div class="col-3 col-md-1 d-none d-md-block no-gutters">
+						<button class="btn btn-lg btn-primary shadow-none rounded-pill repeat"><span class="oi oi-loop-square"></span></button>
+					</div>
 				</div>
 			</div>
 
 			<div class="col-12">
 				<div class="row">
-					<div class="col-12">
-						<button class="btn btn-primary btn-lg shadow-none btn-sm upDir"><span class="oi oi-arrow-thick-top"></span></button>
-						<span class="currentDir"></span>
+					<div class="col-2 col-md-1 no-gutters">
+						<button class="btn btn-primary shadow-none btn-sm upDir"><span class="oi oi-arrow-thick-top"></span></button>
 					</div>
-					
+					<div class="col currentDir"></div>
 				</div>
 			</div>
 
@@ -69,6 +70,11 @@
 
 	</div>
 
+	<script src="node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="node_modules/popper.js/dist/popper.min.js"></script>
+	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="node_modules/jquery.scrollintoview/jquery.scrollintoview.js"></script>
+	<script src="js/main.js"></script>
 </body>
 
 </html>
