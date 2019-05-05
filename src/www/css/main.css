@@ -1,16 +1,6 @@
-.outlined {
-	outline: solid 1px white;
-}
-
 body {
 	cursor: default;
-}
-
-div {
-	font-size: 1rem;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
+	overflow-y: scroll;
 }
 
 button {
@@ -39,94 +29,15 @@ button {
 	width: 100%;
 }
 
+.no-overflow {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
 .no-gutters {
 	margin-right: 0;
 	margin-left: 0;
 	padding-right: 0;
 	padding-left: 0;
 }
-
-/** ORIGINAL
-body {
-	cursor: default;
-	user-select: none;
-}
-
-div.no-gutter {
-	padding-right: 0;
-	padding-left: 0;
-}
-
-div.browser {
-	height: 100vh;
-	overflow-y: auto;
-	font-size: 12px;
-}
-
-li span:hover {
-	cursor: pointer;
-	text-decoration: underline;
-}
-
-div.progress {
-	cursor: pointer;
-	margin-bottom: 0px;
-}
-
-.currentSong {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-canvas.waveform {
-	height: 30px;
-}
-
-.currentTime {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-div.playlist_container {
-	height: calc(100vh - 55px);
-	overflow-y: auto;
-	font-size: 12px;
-}
-
-table.playlist tbody tr {
-	cursor: pointer;
-}
-
-table.playlist tbody tr td {
-	max-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-th.trackNum, td.trackNum {
-	width: 5%;
-}
-
-th.title, td.title {
-	width: 50%;
-}
-
-th.artist, td.artist {
-	width: 20%;
-}
-
-th.album, td.ablum {
-	width: 20%;
-}
-
-th.duration, td.duration {
-	width: 5%;
-}
-
-.loading_message {
-	display: none;
-}
-/**
