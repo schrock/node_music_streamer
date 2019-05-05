@@ -1,6 +1,9 @@
-var isSeeking = false;
+var playlist = [];
 var playlistIndex = 0;
-var fileData = null;
+
+var dirStack = [];
+
+var isSeeking = false;
 var repeat = false;
 
 var analyser;
@@ -9,17 +12,16 @@ var dataArray;
 
 $(document).ready(function () {
 	// get root browser contents
-	browser_bootstrap();
+	upDir();
 	// hookup progress bar
 	$('audio.player').on('timeupdate', function () {
 		var currentTime = $('audio.player').get(0).currentTime;
-		//var fileData = $('table.playlist tbody tr').eq(playlistIndex).data('file');
-		//var duration = fileData.duration;
 		var duration = $('audio.player').get(0).duration;
 		$('div.progress-bar').width(currentTime / duration * 100 + '%');
 		// update time display
 		$('div.progress-bar').html(stringifyTime(currentTime));
-		$('.currentTime').html(fileData.replaygainAlbum + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + fileData.format + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + stringifyTime(currentTime) + ' / ' + stringifyTime(duration) + '&nbsp;');
+		$('.currentTime').html(stringifyTime(currentTime) + '&nbsp;/&nbsp;' + stringifyTime(duration));
+		$('.currentInfo').html(playlist[playlistIndex].replaygainAlbum + '&nbsp;' + playlist[playlistIndex].format);
 	});
 	$('div.progress').click(function (e) {
 		isSeeking = true;
@@ -56,6 +58,7 @@ $(document).ready(function () {
 		}
 	});
 	// hookup audio player buttons
+	$('button.upDir').click(upDir);
 	$('button.previous').click(audioPrevious);
 	$('button.play').click(audioPlay);
 	$('button.pause').click(audioPause);
@@ -66,19 +69,19 @@ $(document).ready(function () {
 	$(document).keydown(function (e) {
 		var key = e.key;
 		if (key == 'z') {
-			$('button.previous').click();
+			audioPrevious();
 			return false;
 		} else if (key == 'x') {
-			$('button.play').click();
+			audioPlay();
 			return false;
 		} else if (key == 'c') {
-			$('button.pause').click();
+			audioPause();
 			return false;
 		} else if (key == 'v') {
-			$('button.stop').click();
+			audioStop();
 			return false;
 		} else if (key == 'b') {
-			$('button.next').click();
+			audioNext();
 			return false;
 		} else if (key == 'ArrowLeft') {
 			audioSeekBackwards(5);
@@ -155,15 +158,35 @@ function stringifyTime(time) {
 	}
 }
 
-function browser_bootstrap() {
-	$.get('/dir?path=', function (data, status) {
-		if (status == 'success') {
-			handleDirContents('div.browser', data);
-		}
-	});
+function upDir() {
+	// show loading message
+	$('.browser').hide();
+	$('.loading_message').show();
+
+	dirStack.pop();
+	if (dirStack.length == 0) {
+		$.get('/dir?path=', function (data, status) {
+			if (status == 'success') {
+				handleDirContents(null, data);
+				// hide loading message
+				$('.loading_message').hide();
+				$('.browser').show();
+			}
+		});
+	} else {
+		var dir = dirStack[dirStack.length - 1];
+		$.get(dir.dirUrl, function (data, status) {
+			if (status == 'success') {
+				handleDirContents(dir, data);
+				// hide loading message
+				$('.loading_message').hide();
+				$('.browser').show();
+			}
+		});
+	}
 }
 
-function handleDirContents(parent, dirEntries) {
+function handleDirContents(currentDir, dirEntries) {
 	var dirs = [];
 	var files = [];
 	for (var dirEntry of dirEntries) {
@@ -173,64 +196,63 @@ function handleDirContents(parent, dirEntries) {
 			files.push(dirEntry);
 		}
 	}
-	handleDirs(parent, dirs);
-	handleFiles(files);
-}
 
-function handleDirs(parent, dirs) {
-	if (dirs.length > 0) {
-		$(parent).append('<ul></ul>');
+	// update go up directory functionality
+	if (currentDir == null) {
+		$('.currentDir').empty();
+	} else {
+		$('.currentDir').html(currentDir.name);
 	}
+
+	// clear browser contents
+	$('.browser').empty();
+
+	// place dirs first in browser
 	for (var dir of dirs) {
-		$(parent + ' ul').append('<li><span>' + dir.name + '</span></li>');
-		$(parent + ' ul li span').last().data('dirUrl', dir.dirUrl);
-		$(parent + ' ul li span').last().click(function () {
-			var element = this;
-			if ($(element).siblings('ul').length > 0) {
-				$(element).siblings('ul').remove();
-			} else {
-				// reset playlistIndex
-				playlistIndex = 0;
-				// clear playlist
-				$('table.playlist tbody tr').remove();
-				// show loading message
-				$('.playlist_container').hide();
-				$('.loading_message').show();
-				// get dir contents
-				var dirUrl = $(element).data('dirUrl');
-				$.get(dirUrl, function (data, status) {
-					if (status == 'success') {
-						handleDirContents(OptimalSelect.select(element.parentNode), data);
-					}
-					// hide loading message
-					$('.loading_message').hide();
-					$('.playlist_container').show();
-				});
-			}
-			return false;
-		});
+		$('.browser').append('<div class="row border-top dir"></div>');
+		$('.browser .dir').last().append('<div class="h4 col-12 no-overflow no-gutters"><span class="oi oi-folder"></span>&nbsp;' + dir.name + '</div>');
+		$('.browser .dir').last().data('dir', dir);
 	}
-}
+	$('.browser .dir').click(function () {
+		var dir = $(this).data('dir');
+		//console.log('clicked dir ' + JSON.stringify(dir));
+		// show loading message
+		$('.browser').hide();
+		$('.loading_message').show();
+		$.get(dir.dirUrl, function (data, status) {
+			if (status == 'success') {
+				dirStack.push(dir);
+				handleDirContents(dir, data);
+				// hide loading message
+				$('.loading_message').hide();
+				$('.browser').show();
+			}
+		});
+		return false;
+	});
 
-function handleFiles(files) {
+	// place files after dirs in browser
 	for (var file of files) {
 		for (var track of file.tracks) {
-			//console.log(JSON.stringify(file, null, 4));
-			$('table.playlist tbody').append('<tr></tr>');
-			$('table.playlist tbody tr').last().append('<td class="trackNum">' + track.track + '</td>');
-			$('table.playlist tbody tr').last().append('<td class="title">' + track.title + '</td>');
-			$('table.playlist tbody tr').last().append('<td class="artist">' + track.artist + '</td>');
-			$('table.playlist tbody tr').last().append('<td class="album">' + track.album + '</td>');
-			$('table.playlist tbody tr').last().append('<td class="duration">' + stringifyTime(track.duration) + '</td>');
-			$('table.playlist tbody tr').last().data('file', track);
+			$('.browser').append('<div class="row border-top track"></div>');
+			$('.browser .track').last().append('<div class="h4 col-1 d-none d-md-flex">' + track.track + '</div>');
+			$('.browser .track').last().append('<div class="h4 col-12 col-md-10 no-overflow no-gutters">' + track.title + '</div>');
+			$('.browser .track').last().append('<div class="h4 col-1 d-none d-md-flex">' + stringifyTime(track.duration) + '</div>');
+			$('.browser .track').last().data('track', track);
 		}
 	}
-	$('table.playlist tbody tr').click(function () {
-		// stop current song
-		audioStop();
-		// update playlistIndex
-		playlistIndex = $(this).index();
-		// play song
+	$('.browser .track').click(function () {
+		var track = $(this).data('track');
+		//console.log('clicked track ' + JSON.stringify(track));
+		playlist = [];
+		playlistIndex = 0;
+		$('.browser .track').each(function (index) {
+			var t = $(this).data('track');
+			playlist.push(t);
+			if (track === t) {
+				playlistIndex = index;
+			}
+		});
 		audioPlay();
 		return false;
 	});
@@ -239,33 +261,44 @@ function handleFiles(files) {
 function audioStop() {
 	$('audio.player').get(0).pause();
 	$('audio.player').get(0).currentTime = 0;
+	$('button.pause').html('<span class="oi oi-media-play"></span>');
+	$('div.progress-bar').removeClass('progress-bar-animated');
 	$('div.progress-bar').width('0%');
 }
 
 function audioPlay() {
 	audioStop();
-	fileData = $('table.playlist tbody tr').eq(playlistIndex).data('file');
+	var track = playlist[playlistIndex];
 	// highlight in playlist
-	$('table.playlist tbody tr').removeClass('table-info');
-	$('table.playlist tbody tr').eq(playlistIndex).addClass('table-info');
-	$('table.playlist tbody tr').eq(playlistIndex).scrollintoview();
+	$('.browser .track').removeClass('bg-primary');
+	$('.browser .track').each(function () {
+		var t = $(this).data('track');
+		if (track === t) {
+			$(this).addClass('bg-primary');
+			$(this).scrollintoview();
+		}
+	});
 	// change current song label
-	$('.currentSong').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + fileData.title);
-	// load selected song
-	$('audio.player').children().remove();
-	$('audio.player').append('<source src="' + fileData.playUrl + '" type="audio/mpeg" />');
+	$('.currentSong').html(track.title);
+	$('.currentArtist').html(track.artist);
+	// load song
+	$('audio.player').empty();
+	$('audio.player').append('<source src="' + track.playUrl + '" type="audio/mpeg" />');
 	$('audio.player').get(0).load();
 	// start playback
 	$('audio.player').get(0).play();
+	$('button.pause').html('<span class="oi oi-media-pause"></span>');
 	$('div.progress-bar').addClass('progress-bar-animated');
 }
 
 function audioPause() {
 	if ($('audio.player').get(0).paused) {
 		$('audio.player').get(0).play();
+		$('button.pause').html('<span class="oi oi-media-pause"></span>');
 		$('div.progress-bar').addClass('progress-bar-animated');
 	} else {
 		$('audio.player').get(0).pause();
+		$('button.pause').html('<span class="oi oi-media-play"></span>');
 		$('div.progress-bar').removeClass('progress-bar-animated');
 	}
 }
@@ -286,25 +319,23 @@ function audioSeekForwards(seconds) {
 
 function audioPrevious() {
 	audioStop();
-	if ($('table.playlist tbody tr').length == 0) {
-		playlistIndex = 0;
+	if (playlist.length == 0) {
 		return;
 	}
 	playlistIndex--;
 	if (playlistIndex < 0) {
-		playlistIndex = $('table.playlist tbody tr').length - 1;
+		playlistIndex = playlist.length - 1;
 	}
 	audioPlay();
 }
 
 function audioNext() {
 	audioStop();
-	if ($('table.playlist tbody tr').length == 0) {
-		playlistIndex = 0;
+	if (playlist.length == 0) {
 		return;
 	}
 	playlistIndex++;
-	if (playlistIndex > ($('table.playlist tbody tr').length - 1)) {
+	if (playlistIndex > (playlist.length - 1)) {
 		playlistIndex = 0;
 	}
 	audioPlay();
@@ -314,10 +345,10 @@ function audioRepeat() {
 	if (repeat) {
 		repeat = false;
 		$('button.repeat').removeClass('active');
-		// $('button.repeat').css('filter', 'invert(0%)');
+		//$('button.repeat').css('filter', 'invert(0%)');
 	} else {
 		repeat = true;
 		$('button.repeat').addClass('active');
-		// $('button.repeat').css('filter', 'invert(100%)');
+		//$('button.repeat').css('filter', 'invert(100%)');
 	}
 }
