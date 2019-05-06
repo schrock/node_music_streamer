@@ -122,6 +122,8 @@ function getDir(req, res) {
 }
 
 function getPlay(req, res) {
+	console.log('Play request from ' + req.connection.remoteAddress);
+
 	res.header('Accept-Ranges', 'bytes');
 	res.setHeader('Content-Type', 'audio/mpeg');
 
