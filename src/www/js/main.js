@@ -46,6 +46,12 @@ $(document).ready(function () {
 	// automatic track change due to inaccurate duration calculation 
 	$('audio.player').on('play playing', function () {
 		isSeeking = false;
+		$('button.pause').html('<span class="oi oi-media-pause"></span>');
+		$('div.progress-bar').addClass('progress-bar-animated');
+	});
+	$('audio.player').on('pause', function () {
+		$('button.pause').html('<span class="oi oi-media-play"></span>');
+		$('div.progress-bar').removeClass('progress-bar-animated');
 	});
 	$('audio.player').on('waiting', function () {
 		var currentTime = $('audio.player').get(0).currentTime;
@@ -57,6 +63,7 @@ $(document).ready(function () {
 			}
 		}
 	});
+
 	// hookup audio player buttons
 	$('button.upDir').click(upDir);
 	$('button.previous').click(audioPrevious);
@@ -261,8 +268,6 @@ function handleDirContents(currentDir, dirEntries) {
 function audioStop() {
 	$('audio.player').get(0).pause();
 	$('audio.player').get(0).currentTime = 0;
-	$('button.pause').html('<span class="oi oi-media-play"></span>');
-	$('div.progress-bar').removeClass('progress-bar-animated');
 	$('div.progress-bar').width('0%');
 }
 
@@ -287,19 +292,13 @@ function audioPlay() {
 	$('audio.player').get(0).load();
 	// start playback
 	$('audio.player').get(0).play();
-	$('button.pause').html('<span class="oi oi-media-pause"></span>');
-	$('div.progress-bar').addClass('progress-bar-animated');
 }
 
 function audioPause() {
 	if ($('audio.player').get(0).paused) {
 		$('audio.player').get(0).play();
-		$('button.pause').html('<span class="oi oi-media-pause"></span>');
-		$('div.progress-bar').addClass('progress-bar-animated');
 	} else {
 		$('audio.player').get(0).pause();
-		$('button.pause').html('<span class="oi oi-media-play"></span>');
-		$('div.progress-bar').removeClass('progress-bar-animated');
 	}
 }
 

@@ -5,6 +5,7 @@ const nconf = require('nconf');
 nconf.argv().env().file('./config.local.json');
 nconf.defaults({
 	"baseDir": process.env.HOME + "/Music",
+	"bitrate": 256,
 	"extensions": ["mp3", "m4a", "flac", "ogg", "ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm"],
 	"httpsCertFile": "./localhost.cert",
 	"httpsKeyFile": "./localhost.key"
@@ -26,6 +27,7 @@ const MediaFile = require('./MediaFile.js');
 
 if (cluster.isMaster) {
 	console.log('baseDir: ' + JSON.stringify(nconf.get('baseDir'), null, 4));
+	console.log('baseDir: ' + JSON.stringify(nconf.get('bitrate'), null, 4));
 	console.log('extensions: ' + JSON.stringify(nconf.get('extensions'), null, 4));
 	console.log('httpsCertFile: ' + JSON.stringify(nconf.get('httpsCertFile'), null, 4));
 	console.log('httpsKeyFile: ' + JSON.stringify(nconf.get('httpsKeyFile'), null, 4));
@@ -146,7 +148,9 @@ function getPlay(req, res) {
 	}
 
 	// return original file if mp3
-	if (ext != null && ext == 'mp3') {
+	//if (ext != null && ext == 'mp3') {
+	// skip this block and convert everything to mp3 on-the-fly
+	if (false) {
 		// return requested portion of original file
 		console.log('streaming original ' + range + ' : ' + queryPath);
 
@@ -170,7 +174,7 @@ function getPlay(req, res) {
 		var track_index = Number(req.query.track_index);
 
 		var duration = req.query.duration;
-		var fileSize = Math.floor(duration * (256 * 1000 / 8));
+		var fileSize = Math.floor(duration * (nconf.get('bitrate') * 1000 / 8));
 		if (endByte.length == 0) {
 			endByte = fileSize - 1;
 		} else {
@@ -184,9 +188,9 @@ function getPlay(req, res) {
 
 		var startTime = 0;
 		if (startByte > 0) {
-			startTime = startByte / (256 * 1000 / 8);
+			startTime = startByte / (nconf.get('bitrate') * 1000 / 8);
 		}
-		var endTime = endByte / (256 * 1000 / 8);
+		var endTime = endByte / (nconf.get('bitrate') * 1000 / 8);
 		// console.log('startTime: ' + startTime);
 		// console.log('endTime:   ' + endTime);
 
@@ -195,9 +199,9 @@ function getPlay(req, res) {
 			command.inputOptions('-track_index ' + track_index);
 		}
 		command.audioCodec('libmp3lame').audioChannels(2)
-			.audioFrequency(44100).audioBitrate(256).format('mp3').noVideo()
+			.audioFrequency(44100).audioBitrate(nconf.get('bitrate')).format('mp3').noVideo()
 			.seek(startTime).duration(endTime - startTime)
-			//.audioFilters('volume=replaygain=album')
+			.audioFilters('volume=replaygain=album')
 			.on('start', function () {
 				// console.log('ffmpeg processing started: ' + realPath);
 			})
