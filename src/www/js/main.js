@@ -3,6 +3,9 @@ var playlistIndex = 0;
 
 var dirStack = [];
 
+var wakeLockEnabled = false;
+var noSleep = new NoSleep();
+
 var isSeeking = false;
 var repeat = false;
 
@@ -249,6 +252,12 @@ function handleDirContents(currentDir, dirEntries) {
 		}
 	}
 	$('.browser .track').click(function () {
+		// try to prevent browser sleep
+		if (wakeLockEnabled == false) {
+			wakeLockEnabled = true;
+			noSleep.enable();
+			console.log("noSleep enabled");
+		}
 		var track = $(this).data('track');
 		//console.log('clicked track ' + JSON.stringify(track));
 		playlist = [];

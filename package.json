@@ -11,6 +11,7 @@
     "jquery": "^3.4.0",
     "jquery.scrollintoview": "^1.9.4",
     "nconf": "^0.10.0",
+    "nosleep.js": "^0.9.0",
     "open-iconic": "^1.1.1",
     "popper.js": "^1.14.7"
   },
