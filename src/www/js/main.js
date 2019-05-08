@@ -9,6 +9,7 @@ var noSleep = new NoSleep();
 var isSeeking = false;
 var repeat = false;
 
+var audioCtx;
 var analyser;
 var bufferLength;
 var dataArray;
@@ -103,7 +104,7 @@ $(document).ready(function () {
 	});
 
 	// Web Audio API stuff
-	var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+	audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 	var myAudio = document.querySelector('audio.player');
 	var source = audioCtx.createMediaElementSource(myAudio);
 	analyser = audioCtx.createAnalyser();
@@ -252,6 +253,8 @@ function handleDirContents(currentDir, dirEntries) {
 		}
 	}
 	$('.browser .track').click(function () {
+		// fix suspended AudioContext on Chrome
+		audioCtx.resume();
 		// try to prevent browser sleep
 		if (wakeLockEnabled == false) {
 			wakeLockEnabled = true;
