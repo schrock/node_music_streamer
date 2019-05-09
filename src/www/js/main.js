@@ -220,6 +220,10 @@ function handleDirContents(currentDir, dirEntries) {
 
 	// place dirs first in browser
 	for (var dir of dirs) {
+		// skip folders containing album art scans
+		if (dir.name.toLowerCase() == 'scans') {
+			continue;
+		}
 		$('.browser').append('<div class="row border-top dir"></div>');
 		$('.browser .dir').last().append('<div class="h4 col-12 no-overflow no-gutters"><span class="oi oi-folder"></span>&nbsp;' + dir.name + '</div>');
 		$('.browser .dir').last().data('dir', dir);
@@ -295,7 +299,8 @@ function audioPlay() {
 			$(this).scrollintoview();
 		}
 	});
-	// change current song label
+	// change current song information labels
+	document.title = track.title;
 	$('.currentSong').html(track.title);
 	$('.currentArtist').html(track.artist);
 	// load song
