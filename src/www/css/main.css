@@ -12,6 +12,11 @@ button {
 	height: 25px;
 }
 
+.progress > .progress-bar {
+	width: 0%;
+	height: 100%;
+}
+
 .loading_message {
 	display: none;
 }

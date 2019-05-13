@@ -23,7 +23,7 @@ $(document).ready(function () {
 		var duration = $('audio.player').get(0).duration;
 		$('div.progress-bar').width(currentTime / duration * 100 + '%');
 		// update time display
-		$('div.progress-bar').html(stringifyTime(currentTime));
+		$('div.progress-bar').html('<h5>' + stringifyTime(currentTime) + '</h5>');
 		$('.currentTime').html(stringifyTime(currentTime) + '&nbsp;/&nbsp;' + stringifyTime(duration));
 		$('.currentInfo').html(playlist[playlistIndex].replaygainAlbum + '&nbsp;' + playlist[playlistIndex].format);
 	});
