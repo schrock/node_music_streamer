@@ -5,7 +5,7 @@ const nconf = require('nconf');
 nconf.argv().env().file('./config.local.json');
 nconf.defaults({
 	"baseDir": process.env.HOME + "/Music",
-	"bitrate": 192,
+	"bitrate": 256,
 	"extensions": ["mp3", "m4a", "flac", "ogg", "ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm"],
 	"httpsCertFile": "./localhost.cert",
 	"httpsKeyFile": "./localhost.key"
