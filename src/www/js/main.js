@@ -250,10 +250,10 @@ function handleDirContents(currentDir, dirEntries) {
 	for (var file of files) {
 		for (var track of file.tracks) {
 			$('.browser').append('<div class="row border-top track"></div>');
-			$('.browser .track').last().append('<div class="h4 col-1 d-none d-md-flex">' + track.track + '</div>');
+			$('.browser .track').last().append('<div class="h4 col-1 d-none d-md-block">' + track.track + '</div>');
 			$('.browser .track').last().append('<div class="h4 col-12 col-md-7 no-overflow no-gutters">' + track.title + '</div>');
-			$('.browser .track').last().append('<div class="h4 col-3 d-none d-md-flex no-overflow">' + track.artist + '</div>');
-			$('.browser .track').last().append('<div class="h4 col-1 d-none d-md-flex">' + stringifyTime(track.duration) + '</div>');
+			$('.browser .track').last().append('<div class="h4 col-3 d-none d-md-block no-overflow">' + track.artist + '</div>');
+			$('.browser .track').last().append('<div class="h4 col-1 d-none d-md-block">' + stringifyTime(track.duration) + '</div>');
 			$('.browser .track').last().data('track', track);
 		}
 	}
