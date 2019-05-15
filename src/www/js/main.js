@@ -225,7 +225,7 @@ function handleDirContents(currentDir, dirEntries) {
 			continue;
 		}
 		$('.browser').append('<div class="row border-top dir"></div>');
-		$('.browser .dir').last().append('<div class="h4 col-12 no-overflow no-gutters"><span class="oi oi-folder"></span>&nbsp;' + dir.name + '</div>');
+		$('.browser .dir').last().append('<div class="h4 col-12 no-overflow no-gutters"><span class="oi oi-folder"></span>&nbsp;&nbsp;&nbsp;' + dir.name + '</div>');
 		$('.browser .dir').last().data('dir', dir);
 	}
 	$('.browser .dir').click(function () {
@@ -249,9 +249,12 @@ function handleDirContents(currentDir, dirEntries) {
 	// place files after dirs in browser
 	for (var file of files) {
 		for (var track of file.tracks) {
+			var trackNumber = track.track + '';
+			if (trackNumber.length == 1) {
+				trackNumber = '0' + trackNumber;
+			}
 			$('.browser').append('<div class="row border-top track"></div>');
-			$('.browser .track').last().append('<div class="h4 col-1 d-none d-md-block">' + track.track + '</div>');
-			$('.browser .track').last().append('<div class="h4 col-12 col-md-7 no-overflow no-gutters">' + track.title + '</div>');
+			$('.browser .track').last().append('<div class="h4 col-12 col-md-8 no-overflow no-gutters">' + trackNumber + '&nbsp;&nbsp;&nbsp;' + track.title + '</div>');
 			$('.browser .track').last().append('<div class="h4 col-3 d-none d-md-block no-overflow">' + track.artist + '</div>');
 			$('.browser .track').last().append('<div class="h4 col-1 d-none d-md-block">' + stringifyTime(track.duration) + '</div>');
 			$('.browser .track').last().data('track', track);
