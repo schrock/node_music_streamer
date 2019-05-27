@@ -59,7 +59,9 @@ $(document).ready(function () {
 	});
 	$('audio.player').on('waiting', function () {
 		var currentTime = $('audio.player').get(0).currentTime;
-		if (currentTime > 0 && !isSeeking) {
+		var duration = $('audio.player').get(0).duration;
+		var difference = Math.abs(currentTime - duration);
+		if (difference < 10 && !isSeeking) {
 			if (repeat) {
 				audioPlay();
 			} else {
