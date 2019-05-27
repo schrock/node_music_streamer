@@ -300,7 +300,7 @@ function audioPlay() {
 		var t = $(this).data('track');
 		if (track === t) {
 			$(this).addClass('bg-primary');
-			$(this).scrollintoview();
+			$(this)[0].scrollIntoView(false);
 		}
 	});
 	// change current song information labels
