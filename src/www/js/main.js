@@ -287,6 +287,14 @@ function handleDirContents(currentDir, dirEntries) {
 	});
 }
 
+function revealElement(element) {
+	var headerRect = $('div.sticky-top')[0].getBoundingClientRect();
+	var elementRect = element.getBoundingClientRect();
+	if (elementRect.top < headerRect.bottom || elementRect.bottom > window.innerHeight) {
+		element.scrollIntoView(false);
+	}
+}
+
 function audioStop() {
 	$('audio.player').get(0).pause();
 	$('audio.player').get(0).currentTime = 0;
@@ -302,7 +310,7 @@ function audioPlay() {
 		var t = $(this).data('track');
 		if (track === t) {
 			$(this).addClass('bg-primary');
-			$(this)[0].scrollIntoView(false);
+			revealElement($(this)[0]);
 		}
 	});
 	// change current song information labels
