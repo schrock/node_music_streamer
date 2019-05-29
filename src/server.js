@@ -201,7 +201,7 @@ function getPlay(req, res) {
 		command.audioCodec('libmp3lame').audioChannels(2)
 			.audioFrequency(44100).audioBitrate(nconf.get('bitrate')).format('mp3').noVideo()
 			.seek(startTime).duration(endTime - startTime)
-			.audioFilters('volume=replaygain=album')
+			.audioFilters('volume=replaygain=track')
 			.on('start', function () {
 				// console.log('ffmpeg processing started: ' + realPath);
 			})
