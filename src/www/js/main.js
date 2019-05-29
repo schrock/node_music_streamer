@@ -23,7 +23,7 @@ $(document).ready(function () {
 		var duration = $('audio.player').get(0).duration;
 		$('div.progress-bar').width(currentTime / duration * 100 + '%');
 		// update time display
-		$('div.progress-bar').html('<h5>' + stringifyTime(currentTime) + '</h5>');
+		$('div.progress-bar').html('<div>' + stringifyTime(currentTime) + '</div>');
 		$('.currentTime').html(stringifyTime(currentTime) + '&nbsp;/&nbsp;' + stringifyTime(duration));
 		$('.currentInfo').html(playlist[playlistIndex].replaygainAlbum + '&nbsp;' + playlist[playlistIndex].format);
 	});
@@ -227,7 +227,7 @@ function handleDirContents(currentDir, dirEntries) {
 			continue;
 		}
 		$('.browser').append('<div class="row border-top dir"></div>');
-		$('.browser .dir').last().append('<div class="h4 col-12 no-overflow no-gutters"><span class="oi oi-folder"></span>&nbsp;&nbsp;&nbsp;' + dir.name + '</div>');
+		$('.browser .dir').last().append('<div class="col-12 no-overflow no-gutters"><span class="oi oi-folder"></span>&nbsp;&nbsp;&nbsp;' + dir.name + '</div>');
 		$('.browser .dir').last().data('dir', dir);
 	}
 	$('.browser .dir').click(function () {
@@ -256,9 +256,9 @@ function handleDirContents(currentDir, dirEntries) {
 				trackNumber = '0' + trackNumber;
 			}
 			$('.browser').append('<div class="row border-top track"></div>');
-			$('.browser .track').last().append('<div class="h4 col-12 col-md-8 no-overflow no-gutters">' + trackNumber + '&nbsp;&nbsp;&nbsp;' + track.title + '</div>');
-			$('.browser .track').last().append('<div class="h4 col-3 d-none d-md-block no-overflow">' + track.artist + '</div>');
-			$('.browser .track').last().append('<div class="h4 col-1 d-none d-md-block">' + stringifyTime(track.duration) + '</div>');
+			$('.browser .track').last().append('<div class="col-12 col-md-8 no-overflow no-gutters">' + trackNumber + '&nbsp;&nbsp;&nbsp;' + track.title + '</div>');
+			$('.browser .track').last().append('<div class="col-3 d-none d-md-block no-overflow">' + track.artist + '</div>');
+			$('.browser .track').last().append('<div class="col-1 d-none d-md-block text-right">' + stringifyTime(track.duration) + '</div>');
 			$('.browser .track').last().data('track', track);
 		}
 	}
@@ -374,11 +374,11 @@ function audioNext() {
 function audioRepeat() {
 	if (repeat) {
 		repeat = false;
-		$('button.repeat').removeClass('active');
-		//$('button.repeat').css('filter', 'invert(0%)');
+		//$('button.repeat').removeClass('active');
+		$('button.repeat').css('filter', 'invert(0%)');
 	} else {
 		repeat = true;
-		$('button.repeat').addClass('active');
-		//$('button.repeat').css('filter', 'invert(100%)');
+		//$('button.repeat').addClass('active');
+		$('button.repeat').css('filter', 'invert(100%)');
 	}
 }

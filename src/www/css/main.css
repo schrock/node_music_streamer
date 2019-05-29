@@ -1,6 +1,13 @@
 body {
+	font-size: 1.5rem;
 	cursor: default;
 	overflow-y: scroll;
+}
+
+@media (min-width: 768px) {
+	body {
+		font-size: 1rem;
+	}
 }
 
 button {
@@ -9,7 +16,7 @@ button {
 
 .progress {
 	cursor: pointer;
-	height: 25px;
+	height: 20px;
 }
 
 .progress > .progress-bar {
@@ -30,7 +37,7 @@ button {
 }
 
 .waveform {
-	height: 25px;
+	height: 20px;
 	width: 100%;
 }
 
