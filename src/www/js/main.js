@@ -6,7 +6,6 @@ var dirStack = [];
 var wakeLockEnabled = false;
 var noSleep = new NoSleep();
 
-var isSeeking = false;
 var repeat = false;
 
 var audioCtx;
@@ -28,7 +27,6 @@ $(document).ready(function () {
 		$('.currentInfo').html(playlist[playlistIndex].replaygainAlbum + '&nbsp;' + playlist[playlistIndex].format);
 	});
 	$('div.progress').click(function (e) {
-		isSeeking = true;
 		var duration = $('audio.player').get(0).duration;
 		if (duration > 0) {
 			var selectedX = e.pageX - $(this).offset().left;
@@ -47,27 +45,13 @@ $(document).ready(function () {
 			audioNext();
 		}
 	});
-	// automatic track change due to inaccurate duration calculation 
 	$('audio.player').on('play playing', function () {
-		isSeeking = false;
 		$('button.pause').html('<span class="oi oi-media-pause"></span>');
 		$('div.progress-bar').addClass('progress-bar-animated');
 	});
 	$('audio.player').on('pause', function () {
 		$('button.pause').html('<span class="oi oi-media-play"></span>');
 		$('div.progress-bar').removeClass('progress-bar-animated');
-	});
-	$('audio.player').on('waiting', function () {
-		var currentTime = $('audio.player').get(0).currentTime;
-		var duration = $('audio.player').get(0).duration;
-		var difference = Math.abs(currentTime - duration);
-		if (difference < 10 && !isSeeking) {
-			if (repeat) {
-				audioPlay();
-			} else {
-				audioNext();
-			}
-		}
 	});
 
 	// hookup audio player buttons
@@ -335,14 +319,12 @@ function audioPause() {
 
 function audioSeekBackwards(seconds) {
 	if (!$('audio.player').get(0).paused) {
-		isSeeking = true;
 		$('audio.player').get(0).currentTime -= seconds;
 	}
 }
 
 function audioSeekForwards(seconds) {
 	if (!$('audio.player').get(0).paused) {
-		isSeeking = true;
 		$('audio.player').get(0).currentTime += seconds;
 	}
 }
