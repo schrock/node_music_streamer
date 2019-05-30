@@ -19,7 +19,9 @@ $(document).ready(function () {
 	// hookup progress bar
 	$('audio.player').on('timeupdate', function () {
 		var currentTime = $('audio.player').get(0).currentTime;
-		var duration = $('audio.player').get(0).duration;
+		//var duration = $('audio.player').get(0).duration;
+		var track = playlist[playlistIndex];
+		var duration = track.duration;
 		$('div.progress-bar').width(currentTime / duration * 100 + '%');
 		// update time display
 		$('div.progress-bar').html('<div>' + stringifyTime(currentTime) + '</div>');
@@ -27,7 +29,9 @@ $(document).ready(function () {
 		$('.currentInfo').html(playlist[playlistIndex].replaygainAlbum + '&nbsp;' + playlist[playlistIndex].format);
 	});
 	$('div.progress').click(function (e) {
-		var duration = $('audio.player').get(0).duration;
+		//var duration = $('audio.player').get(0).duration;
+		var track = playlist[playlistIndex];
+		var duration = track.duration;
 		if (duration > 0) {
 			var selectedX = e.pageX - $(this).offset().left;
 			var maxX = $(this).width();
