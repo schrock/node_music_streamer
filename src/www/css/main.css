@@ -16,7 +16,7 @@ button {
 
 .progress {
 	cursor: pointer;
-	height: 20px;
+	height: 25px;
 }
 
 .progress > .progress-bar {
@@ -36,8 +36,13 @@ button {
 	cursor: pointer;
 }
 
-.waveform {
+canvas.waveform {
 	height: 20px;
+	width: 100%;
+}
+
+canvas.buffered {
+	height: 2px;
 	width: 100%;
 }
 

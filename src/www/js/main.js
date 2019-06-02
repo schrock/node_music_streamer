@@ -104,6 +104,7 @@ $(document).ready(function () {
 	source.connect(analyser);
 	analyser.connect(audioCtx.destination);
 	drawWaveform();
+	drawBuffered();
 });
 
 function drawWaveform() {
@@ -143,6 +144,33 @@ function drawWaveform() {
 	}
 	canvasCtx.lineTo(canvas.width, canvas.height / 2);
 	canvasCtx.stroke();
+}
+
+function drawBuffered() {
+	// draw at browser request/refresh rate
+	drawVisual = requestAnimationFrame(drawBuffered);
+
+	var canvas = document.querySelector('canvas.buffered');
+	var canvasCtx = canvas.getContext('2d');
+
+	// make internal width and height match css width and height
+	var canvasStyle = window.getComputedStyle(canvas);
+	canvas.width = canvasStyle.width.substring(0, canvasStyle.width.indexOf('px'));
+	canvas.height = canvasStyle.height.substring(0, canvasStyle.height.indexOf('px'));
+
+	// clear canvas
+	canvasCtx.fillStyle = window.getComputedStyle(document.body).backgroundColor;
+	canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+	// draw buffered areas
+	var myAudio = $('audio.player')[0];
+	var inc = canvas.width / myAudio.duration;
+	for (i = 0; i < myAudio.buffered.length; i++) {
+		var startX = myAudio.buffered.start(i) * inc;
+		var endX = myAudio.buffered.end(i) * inc;
+		canvasCtx.fillStyle = window.getComputedStyle(document.body).color;
+		canvasCtx.fillRect(startX, 0, endX - startX, canvas.height);
+	}
 }
 
 function stringifyTime(time) {
