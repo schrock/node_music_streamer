@@ -284,8 +284,11 @@ function handleDirContents(currentDir, dirEntries) {
 		// try to prevent browser sleep
 		if (wakeLockEnabled == false) {
 			wakeLockEnabled = true;
-			noSleep.enable();
-			console.log("noSleep enabled");
+			// disable on desktop due to high CPU usage
+			if (screen.width < 768) {
+				noSleep.enable();
+				console.log("noSleep enabled");
+			}
 		}
 		var track = $(this).data('track');
 		//console.log('clicked track ' + JSON.stringify(track));
