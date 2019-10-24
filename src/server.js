@@ -15,8 +15,8 @@ nconf.defaults({
 const cluster = require('cluster');
 const os = require('os');
 const express = require('express');
+const http = require('http');
 const https = require('https');
-const app = express();
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 
@@ -42,7 +42,22 @@ if (cluster.isMaster) {
 		console.log('Worker %d died with code/signal %s. Restarting worker...', worker.process.pid, signal || code);
 		cluster.fork();
 	});
+
+	// create http server for redirection to https
+	var app = express();
+	app.use(function (req, res, next) {
+		var host = req.headers.host.replace(/:\d+$/, '');
+		console.log("redirecting to " + "https://" + host + req.url);
+		res.redirect("https://" + host + req.url);
+	});
+	var port = 8080;
+	var server = http.createServer(app);
+	server.listen(port, function () {
+		console.log('http redirection to https running on port ' + port + '...');
+	});
 } else {
+	var app = express();
+
 	app.use(function (req, res, next) {
 		res.header("Cache-Control", "no-store, no-cache");
 		next();
