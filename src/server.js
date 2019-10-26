@@ -4,6 +4,9 @@
 const nconf = require('nconf');
 nconf.argv().env().file('./config.local.json');
 nconf.defaults({
+	"baseDir": process.env.HOME + "/Music",
+	"bitrate": 256,
+	"extensions": ["mp3", "m4a", "flac", "ogg", "ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm"],
 	"httpsCertFile": "./localhost.cert",
 	"httpsKeyFile": "./localhost.key"
 });
@@ -15,6 +18,9 @@ const express = require('express');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
+
+// classes
+const Worker = require('./Worker.js');
 
 if (cluster.isMaster) {
 	console.log('baseDir: ' + JSON.stringify(nconf.get('baseDir'), null, 4));
@@ -44,10 +50,11 @@ if (cluster.isMaster) {
 	var port = 8080;
 	var server = http.createServer(app);
 	server.listen(port, function () {
-		console.log('http redirection to https running on port ' + port + '...');
+		console.log('http redirection running on port ' + port + '...');
 	});
 } else {
 	// setup server
+	var worker = new Worker(nconf);
 	var options = {
 		key: fs.readFileSync(nconf.get('httpsKeyFile')),
 		cert: fs.readFileSync(nconf.get('httpsCertFile')),
@@ -55,7 +62,7 @@ if (cluster.isMaster) {
 		rejectUnauthorized: false
 	};
 	var port = 8443;
-	var server = https.createServer(options, require("./app.js"));
+	var server = https.createServer(options, worker.getApp());
 	server.listen(port, function () {
 		console.log('worker running on port ' + port + '...');
 	});
