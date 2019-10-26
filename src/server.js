@@ -18,7 +18,7 @@ const fs = require('fs');
 
 if (cluster.isMaster) {
 	console.log('baseDir: ' + JSON.stringify(nconf.get('baseDir'), null, 4));
-	console.log('baseDir: ' + JSON.stringify(nconf.get('bitrate'), null, 4));
+	console.log('bitrate: ' + JSON.stringify(nconf.get('bitrate'), null, 4));
 	console.log('extensions: ' + JSON.stringify(nconf.get('extensions'), null, 4));
 	console.log('httpsCertFile: ' + JSON.stringify(nconf.get('httpsCertFile'), null, 4));
 	console.log('httpsKeyFile: ' + JSON.stringify(nconf.get('httpsKeyFile'), null, 4));
