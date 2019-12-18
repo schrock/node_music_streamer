@@ -19,6 +19,25 @@ module.exports = class Worker {
 			res.header("Cache-Control", "no-store, no-cache");
 			next();
 		});
+
+		const apiTimeout = 5 * 1000;
+		this.app.use(function (req, res, next) {
+			// Set the timeout for all HTTP requests
+			req.setTimeout(apiTimeout, function () {
+				let err = new Error('Request Timeout');
+				err.status = 408;
+				next(err);
+			});
+			// Set the server response timeout for all HTTP requests
+			res.setTimeout(apiTimeout, function () {
+				let err = new Error('Service Unavailable');
+				err.status = 503;
+				next(err);
+			});
+			next();
+		});
+
+		// routes
 		this.app.get('/hello', function (req, res) {
 			res.send('hello world!');
 		});
@@ -157,19 +176,19 @@ module.exports = class Worker {
 					.seek(startTime).duration(endTime - startTime)
 					.audioFilters('volume=replaygain=track')
 					.on('start', function () {
-						// console.log('ffmpeg processing started: ' + realPath);
+						// console.log('ffmpeg processing started: ' + queryPath);
 					})
 					.on('error', function (err) {
 						if (!err.toString().includes('Output stream closed')) {
-							console.log('ffmpeg processing error: ' + realPath + ' : ' + err.message);
+							console.log('ffmpeg processing error: ' + queryPath + ' : ' + err.message);
 						}
 						if (!err.toString().includes('SIGKILL')) {
-							// console.log('Killing ffmpeg...');
+							console.log('Killing ffmpeg for ' + queryPath);
 							command.kill();
 						}
 					})
 					.on('end', function () {
-						// console.log('ffmpeg processing finished: ' + realPath);
+						// console.log('ffmpeg processing finished: ' + queryPath);
 					})
 					.pipe(res, { end: true });
 				// // kill ffmpeg after 10 minutes
@@ -178,7 +197,7 @@ module.exports = class Worker {
 				// 	command.kill();
 				// }, 600000);
 				res.on('finish', function () {
-					// console.log('Play response using ffmpeg finished. Killing ffmpeg...');
+					console.log('Play response using ffmpeg finished. Killing ffmpeg for ' + queryPath);
 					command.kill();
 				});
 			}
