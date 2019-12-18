@@ -20,7 +20,8 @@ module.exports = class Worker {
 			next();
 		});
 
-		const apiTimeout = 5 * 1000;
+		// timeout of 10 minutes
+		const apiTimeout = 10 * 60 * 1000;
 		this.app.use(function (req, res, next) {
 			// Set the timeout for all HTTP requests
 			req.setTimeout(apiTimeout, function () {

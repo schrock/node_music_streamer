@@ -66,4 +66,6 @@ if (cluster.isMaster) {
 	server.listen(port, function () {
 		console.log('worker running on port ' + port + '...');
 	});
+	// let worker code handle timeouts
+	server.timeout = 0;
 }
