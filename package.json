@@ -8,7 +8,7 @@
     "bootswatch": "4.3.1",
     "express": "^4.16.4",
     "fluent-ffmpeg": "^2.1.0",
-    "jquery": "^3.4.0",
+    "jquery": "^3.5.0",
     "nconf": "^0.10.0",
     "nosleep.js": "^0.9.0",
     "open-iconic": "^1.1.1",
