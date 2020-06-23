@@ -1,82 +1,60 @@
 body {
+	font-size: 1.5rem;
 	cursor: default;
-	user-select: none;
+	overflow-y: scroll;
 }
 
-div.no-gutter {
-	padding-right: 0;
-	padding-left: 0;
+@media (min-width: 768px) {
+	body {
+		font-size: 1rem;
+	}
 }
 
-div.browser {
-	height: 100vh;
-	overflow-y: auto;
-	font-size: 12px;
+button {
+	width: 100%;
 }
 
-li span:hover {
+.progress {
 	cursor: pointer;
-	text-decoration: underline;
+	height: 25px;
 }
 
-div.progress {
-	cursor: pointer;
-	margin-bottom: 0px;
-}
-
-.currentSong {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-canvas.waveform {
-	height: 30px;
-}
-
-.currentTime {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-div.playlist_container {
-	height: calc(100vh - 55px);
-	overflow-y: auto;
-	font-size: 12px;
-}
-
-table.playlist tbody tr {
-	cursor: pointer;
-}
-
-table.playlist tbody tr td {
-	max-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-th.trackNum, td.trackNum {
-	width: 5%;
-}
-
-th.title, td.title {
-	width: 50%;
-}
-
-th.artist, td.artist {
-	width: 20%;
-}
-
-th.album, td.ablum {
-	width: 20%;
-}
-
-th.duration, td.duration {
-	width: 5%;
+.progress > .progress-bar {
+	width: 0%;
+	height: 100%;
 }
 
 .loading_message {
 	display: none;
+}
+
+.dir {
+	cursor: pointer;
+}
+
+.track {
+	cursor: pointer;
+}
+
+canvas.waveform {
+	height: 20px;
+	width: 100%;
+}
+
+canvas.buffered {
+	height: 2px;
+	width: 100%;
+}
+
+.no-overflow {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.no-gutters {
+	margin-right: 0;
+	margin-left: 0;
+	padding-right: 0;
+	padding-left: 0;
 }

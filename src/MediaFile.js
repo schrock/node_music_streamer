@@ -44,6 +44,10 @@ module.exports = class MediaFile extends DirEntry {
 					if (tags.DISC != null) {
 						disc = tags.DISC;
 					}
+					var slashIndex = disc.indexOf('/');
+					if (slashIndex > 0) {
+						disc = disc.substring(0, slashIndex);
+					}
 					// track
 					if (tags.track != null) {
 						track = tags.track;
@@ -51,7 +55,7 @@ module.exports = class MediaFile extends DirEntry {
 					if (tags.TRACK != null) {
 						track = tags.TRACK;
 					}
-					var slashIndex = track.indexOf('/');
+					slashIndex = track.indexOf('/');
 					if (slashIndex > 0) {
 						track = track.substring(0, slashIndex);
 					}
