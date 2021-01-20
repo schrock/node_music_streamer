@@ -54,7 +54,7 @@ module.exports = class Worker {
 			if (typeof queryPath === 'undefined') {
 				queryPath = '';
 			}
-			var realPath = nconf.get('baseDir') + '/' + queryPath;
+			var realPath = nconf.get('musicDir') + '/' + queryPath;
 
 			var dirContents;
 			try {
@@ -69,7 +69,7 @@ module.exports = class Worker {
 			var initPromises = [];
 			for (var fileName of dirContents) {
 				var filePath = queryPath + '/' + fileName;
-				var realPath = nconf.get('baseDir') + '/' + filePath;
+				var realPath = nconf.get('musicDir') + '/' + filePath;
 				var stat = fs.statSync(realPath);
 				if (stat.isDirectory()) {
 					var dirUrl = '/dir?path=' + encodeURIComponent(queryPath + '/' + fileName);
@@ -114,7 +114,7 @@ module.exports = class Worker {
 			var endByte = range.substring(dashIndex + 1);
 
 			var queryPath = req.query.path;
-			var realPath = nconf.get('baseDir') + '/' + queryPath;
+			var realPath = nconf.get('musicDir') + '/' + queryPath;
 			var extIndex = realPath.lastIndexOf('.');
 			var ext = null;
 			if (extIndex > 0) {
