@@ -2,9 +2,9 @@
 
 // configuration
 const nconf = require('nconf');
-nconf.argv().env().file('./config.local.json');
+nconf.argv();
 nconf.defaults({
-	"baseDir": process.env.HOME + "/Music",
+	"musicDir": process.env.HOME + "/music",
 	"bitrate": 256,
 	"extensions": ["mp3", "m4a", "flac", "ogg", "ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm"],
 	"httpsCertFile": "./localhost.cert",
@@ -23,7 +23,8 @@ const fs = require('fs');
 const Worker = require('./Worker.js');
 
 if (cluster.isMaster) {
-	console.log('baseDir: ' + JSON.stringify(nconf.get('baseDir'), null, 4));
+	console.log('argv: ' + process.argv);
+	console.log('musicDir: ' + JSON.stringify(nconf.get('musicDir'), null, 4));
 	console.log('bitrate: ' + JSON.stringify(nconf.get('bitrate'), null, 4));
 	console.log('extensions: ' + JSON.stringify(nconf.get('extensions'), null, 4));
 	console.log('httpsCertFile: ' + JSON.stringify(nconf.get('httpsCertFile'), null, 4));
