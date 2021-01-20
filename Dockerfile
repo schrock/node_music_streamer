@@ -1,8 +1,12 @@
-FROM node:14.15.4-buster-slim
+FROM node:10-slim
 
-# install ffmpeg, copy over app files
-RUN apt-get update && apt-get install -y ffmpeg && mkdir /root/app && mkdir /root/music
-WORKDIR /root/app
+# install ffmpeg
+RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list && apt-get update && apt-get install -y ffmpeg
+
+# copy over app files
+USER node
+RUN mkdir /home/node/app && mkdir /home/node/Music
+WORKDIR /home/node/app
 ADD . .
 
 # build and run
