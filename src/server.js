@@ -8,7 +8,15 @@ nconf.defaults({
 	"bitrate": 256,
 	"extensions": ["mp3", "m4a", "flac", "ogg", "ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm"],
 	"httpsCertFile": "./localhost.cert",
-	"httpsKeyFile": "./localhost.key"
+	"httpsKeyFile": "./localhost.key",
+	"ips": [
+		'::1',
+		'127.0.0.1',
+		['192.168.1.2', '192.168.1.255'],
+		['174.192.0.0', '174.255.255.255'],
+		'128.149.0.0/16',
+		'137.79.0.0/16'
+	]
 });
 
 // 3rd party

@@ -4,16 +4,27 @@
 const express = require('express');
 const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
+const ipfilter = require('express-ipfilter');
 
 // classes
 const DirEntry = require('./DirEntry.js');
 const Directory = require('./Directory.js');
 const MediaFile = require('./MediaFile.js');
+const { reset } = require('nconf');
 
 module.exports = class Worker {
 
 	constructor(nconf) {
 		this.app = express();
+
+		this.app.use(ipfilter.IpFilter(nconf.get('ips'), { mode: 'allow', logLevel: 'deny' }));
+
+		// error handler (required for ipfilter)
+		this.app.use(function (err, req, res, next) {
+			//console.log('Error handler', err);
+			res.status(err.status || 500);
+			res.send(err.message);
+		});
 
 		this.app.use(function (req, res, next) {
 			res.header("Cache-Control", "no-store, no-cache");
