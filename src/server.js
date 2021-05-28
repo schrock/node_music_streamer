@@ -30,6 +30,9 @@ const fs = require('fs');
 // classes
 const Worker = require('./Worker.js');
 
+var httpPort = 8080;
+var httpsPort = 8443;
+
 if (cluster.isMaster) {
 	console.log('argv: ' + process.argv);
 	console.log('musicDir: ' + JSON.stringify(nconf.get('musicDir'), null, 4));
@@ -53,13 +56,13 @@ if (cluster.isMaster) {
 	var app = express();
 	app.use(function (req, res, next) {
 		var host = req.headers.host.replace(/:\d+$/, '');
-		console.log("redirecting to " + "https://" + host + req.url);
-		res.redirect("https://" + host + req.url);
+		var newUrl = "https://" + host + ":" + httpsPort + req.url;
+		console.log("redirecting to " + newUrl);
+		res.redirect(newUrl);
 	});
-	var port = 8080;
 	var server = http.createServer(app);
-	server.listen(port, function () {
-		console.log('http redirection running on port ' + port + '...');
+	server.listen(httpPort, function () {
+		console.log('http redirection running on port ' + httpPort + '...');
 	});
 } else {
 	// setup server
@@ -70,10 +73,9 @@ if (cluster.isMaster) {
 		requestCert: false,
 		rejectUnauthorized: false
 	};
-	var port = 8443;
 	var server = https.createServer(options, worker.getApp());
-	server.listen(port, function () {
-		console.log('worker running on port ' + port + '...');
+	server.listen(httpsPort, function () {
+		console.log('worker running on port ' + httpsPort + '...');
 	});
 	// let worker code handle timeouts
 	server.timeout = 0;
