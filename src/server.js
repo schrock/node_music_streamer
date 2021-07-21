@@ -10,11 +10,10 @@ nconf.defaults({
 	"httpsCertFile": "./localhost.cert",
 	"httpsKeyFile": "./localhost.key",
 	"ips": [
-		'::1',
 		'::ffff:127.0.0.1',
-		'::ffff:192.168.1.0/24',
-		'::ffff:128.149.0.0/16',
-		'::ffff:137.79.0.0/16',
+		['::ffff:192.168.1.0', '::ffff:192.168.255.255'],
+		['::ffff:128.149.0.0', '::ffff:128.149.255.255'],
+		['::ffff:137.79.0.0', '::ffff:137.79.255.255'],
 		['::ffff:174.192.0.0', '::ffff:174.255.255.255']
 	]
 });
@@ -40,6 +39,7 @@ if (cluster.isMaster) {
 	console.log('extensions: ' + JSON.stringify(nconf.get('extensions'), null, 4));
 	console.log('httpsCertFile: ' + JSON.stringify(nconf.get('httpsCertFile'), null, 4));
 	console.log('httpsKeyFile: ' + JSON.stringify(nconf.get('httpsKeyFile'), null, 4));
+	console.log('ips: ' + JSON.stringify(nconf.get('ips'), null, 4));
 
 	var numCPUs = os.cpus().length;
 	for (var i = 0; i < numCPUs; i++) {
