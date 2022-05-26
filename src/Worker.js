@@ -133,25 +133,25 @@ module.exports = class Worker {
 			}
 
 			// return original file if mp3
-			//if (ext != null && ext == 'mp3') {
-			// skip this block and convert everything to mp3 on-the-fly
-			if (false) {
+			if (ext != null && ext == 'mp3') {
 				// return requested portion of original file
 				console.log('streaming original ' + range + ' : ' + queryPath);
 
-				var fileSize = fs.statSync(realPath).size;
-				if (endByte.length == 0) {
-					endByte = fileSize - 1;
-				} else {
-					endByte = Number(endByte);
-				}
-				endByte = fileSize - 1;
+				// var fileSize = fs.statSync(realPath).size;
+				// if (endByte.length == 0) {
+				// 	endByte = fileSize - 1;
+				// } else {
+				// 	endByte = Number(endByte);
+				// }
+				// endByte = fileSize - 1;
 
-				res.setHeader('Content-Range', 'bytes ' + startByte + '-' + endByte + '/' + fileSize);
-				res.setHeader('Content-Length', endByte - startByte + 1);
-				res.status(206);
+				// res.setHeader('Content-Range', 'bytes ' + startByte + '-' + endByte + '/' + fileSize);
+				// res.setHeader('Content-Length', endByte - startByte + 1);
+				// res.status(206);
 
-				fs.createReadStream(realPath, { start: startByte, end: endByte }).pipe(res, { end: true });
+				// fs.createReadStream(realPath, { start: startByte, end: endByte }).pipe(res, { end: true });
+
+				res.sendFile(realPath);
 			} else {
 				// convert to mp3 using ffmpeg
 				console.log('converting to mp3 ' + range + ' : ' + queryPath);
