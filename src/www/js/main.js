@@ -341,7 +341,10 @@ function audioPlay() {
 	$('audio.player').append('<source src="' + track.playUrl + '" type="audio/mpeg" />');
 	$('audio.player').get(0).load();
 	// start playback
-	$('audio.player').get(0).play();
+	// $('audio.player').get(0).play();
+	setTimeout(function () {
+		$('audio.player').get(0).play();
+	}, 100);
 }
 
 function audioPause() {
