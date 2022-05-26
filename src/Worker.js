@@ -132,8 +132,8 @@ module.exports = class Worker {
 				ext = realPath.substring(extIndex + 1);
 			}
 
-			// return original file if mp3
-			if (ext != null && ext == 'mp3') {
+			// return original file if mp3, m4a, or ogg
+			if (ext != null && (ext == 'mp3' || ext == 'm4a' || ext == 'ogg')) {
 				// return requested portion of original file
 				console.log('streaming original ' + range + ' : ' + queryPath);
 
