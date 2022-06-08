@@ -1,5 +1,9 @@
+// const { Gapless5 } = require("@regosen/gapless-5");
+const player = new Gapless5({ useWebAudio: false, loop: true, loadLimit: 3 });
+var playerPaused = true;
+
 var playlist = [];
-var playlistIndex = 0;
+var playlistDirty = true;
 
 var dirStack = [];
 
@@ -8,54 +12,65 @@ var noSleep = new NoSleep();
 
 var repeat = false;
 
-var audioCtx;
-var analyser;
-var bufferLength;
-var dataArray;
+// var audioCtx;
+// var analyser;
+// var bufferLength;
+// var dataArray;
 
 $(document).ready(function () {
 	// get root browser contents
 	upDir();
+
+	// setup player callbacks
+	player.onplay = function () {
+		playerPaused = false;
+		$('button.pause').html('<span class="oi oi-media-pause"></span>');
+		$('div.progress-bar').addClass('progress-bar-animated');
+	}
+	player.onpause = function () {
+		playerPaused = true;
+		$('button.pause').html('<span class="oi oi-media-play"></span>');
+		$('div.progress-bar').removeClass('progress-bar-animated');
+	}
+	player.onstop = function () {
+		playerPaused = true;
+		$('button.pause').html('<span class="oi oi-media-play"></span>');
+		$('div.progress-bar').removeClass('progress-bar-animated');
+	}
+	player.onnext = function (from_track, to_track) {
+		if (repeat) {
+			player.gotoTrack(from_track);
+			player.cue();
+		}
+	}
+
 	// hookup progress bar
-	$('audio.player').on('timeupdate', function () {
-		var currentTime = $('audio.player').get(0).currentTime;
+	setInterval(function () {
+		var currentTime = player.getPosition() / 1000;
 		//var duration = $('audio.player').get(0).duration;
-		var track = playlist[playlistIndex];
-		var duration = track.duration;
-		$('div.progress-bar').width(currentTime / duration * 100 + '%');
-		// update time display
-		$('div.progress-bar').html('<div>' + stringifyTime(currentTime) + '</div>');
-		$('.currentTime').html(stringifyTime(currentTime) + '&nbsp;/&nbsp;' + stringifyTime(duration));
-		$('.currentInfo').html(playlist[playlistIndex].replaygainAlbum + '&nbsp;' + playlist[playlistIndex].format);
-	});
+		var track = playlist[getPlaylistIndex()];
+		if (track !== undefined) {
+			updateSongInfo();
+			var duration = track.duration;
+			$('div.progress-bar').width(currentTime / duration * 100 + '%');
+			// update time display
+			$('div.progress-bar').html('<div>' + stringifyTime(currentTime) + '</div>');
+			$('.currentTime').html(stringifyTime(currentTime) + '&nbsp;/&nbsp;' + stringifyTime(duration));
+			$('.currentInfo').html(playlist[getPlaylistIndex()].replaygainAlbum + '&nbsp;' + playlist[getPlaylistIndex()].format);
+		}
+	}, 500);
 	$('div.progress').click(function (e) {
-		//var duration = $('audio.player').get(0).duration;
-		var track = playlist[playlistIndex];
+		var duration = player.getPosition() / 1000;
+		var track = playlist[getPlaylistIndex()];
 		var duration = track.duration;
 		if (duration > 0) {
 			var selectedX = e.pageX - $(this).offset().left;
 			var maxX = $(this).width();
 			var targetTimeFraction = selectedX / maxX;
 			var targetTime = duration * targetTimeFraction;
-			$('audio.player').get(0).currentTime = targetTime;
+			player.setPosition(targetTime * 1000);
 		}
 		return false;
-	});
-	// automatic track change at end of current song
-	$('audio.player').on('ended', function () {
-		if (repeat) {
-			audioPlay();
-		} else {
-			audioNext();
-		}
-	});
-	$('audio.player').on('play playing', function () {
-		$('button.pause').html('<span class="oi oi-media-pause"></span>');
-		$('div.progress-bar').addClass('progress-bar-animated');
-	});
-	$('audio.player').on('pause', function () {
-		$('button.pause').html('<span class="oi oi-media-play"></span>');
-		$('div.progress-bar').removeClass('progress-bar-animated');
 	});
 
 	// hookup audio player buttons
@@ -93,85 +108,85 @@ $(document).ready(function () {
 		}
 	});
 
-	// Web Audio API stuff
-	audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-	var myAudio = document.querySelector('audio.player');
-	var source = audioCtx.createMediaElementSource(myAudio);
-	analyser = audioCtx.createAnalyser();
-	analyser.fftSize = 2048;
-	bufferLength = analyser.frequencyBinCount;
-	dataArray = new Uint8Array(bufferLength);
-	source.connect(analyser);
-	analyser.connect(audioCtx.destination);
-	drawWaveform();
-	drawBuffered();
+	// // Web Audio API stuff
+	// audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+	// var myAudio = document.querySelector('audio.player');
+	// var source = audioCtx.createMediaElementSource(myAudio);
+	// analyser = audioCtx.createAnalyser();
+	// analyser.fftSize = 2048;
+	// bufferLength = analyser.frequencyBinCount;
+	// dataArray = new Uint8Array(bufferLength);
+	// source.connect(analyser);
+	// analyser.connect(audioCtx.destination);
+	// drawWaveform();
+	// drawBuffered();
 });
 
-function drawWaveform() {
-	// draw at browser request/refresh rate
-	drawVisual = requestAnimationFrame(drawWaveform);
+// function drawWaveform() {
+// 	// draw at browser request/refresh rate
+// 	drawVisual = requestAnimationFrame(drawWaveform);
 
-	var canvas = document.querySelector('canvas.waveform');
-	var canvasCtx = canvas.getContext('2d');
+// 	var canvas = document.querySelector('canvas.waveform');
+// 	var canvasCtx = canvas.getContext('2d');
 
-	// make internal width and height match css width and height
-	var canvasStyle = window.getComputedStyle(canvas);
-	canvas.width = canvasStyle.width.substring(0, canvasStyle.width.indexOf('px'));
-	canvas.height = canvasStyle.height.substring(0, canvasStyle.height.indexOf('px'));
+// 	// make internal width and height match css width and height
+// 	var canvasStyle = window.getComputedStyle(canvas);
+// 	canvas.width = canvasStyle.width.substring(0, canvasStyle.width.indexOf('px'));
+// 	canvas.height = canvasStyle.height.substring(0, canvasStyle.height.indexOf('px'));
 
-	// clear canvas
-	canvasCtx.fillStyle = window.getComputedStyle(document.body).backgroundColor;
-	canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+// 	// clear canvas
+// 	canvasCtx.fillStyle = window.getComputedStyle(document.body).backgroundColor;
+// 	canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-	// copy current audio frequency data into array
-	analyser.getByteTimeDomainData(dataArray);
+// 	// copy current audio frequency data into array
+// 	analyser.getByteTimeDomainData(dataArray);
 
-	// draw waveform
-	canvasCtx.lineWidth = 1;
-	canvasCtx.strokeStyle = window.getComputedStyle(document.body).color;
-	canvasCtx.beginPath();
-	var sliceWidth = canvas.width * 1.0 / bufferLength;
-	var x = 0;
-	for (var i = 0; i < bufferLength; i++) {
-		var v = dataArray[i] / 128.0;
-		var y = v * canvas.height / 2;
-		if (i === 0) {
-			canvasCtx.moveTo(x, y);
-		} else {
-			canvasCtx.lineTo(x, y);
-		}
-		x += sliceWidth;
-	}
-	canvasCtx.lineTo(canvas.width, canvas.height / 2);
-	canvasCtx.stroke();
-}
+// 	// draw waveform
+// 	canvasCtx.lineWidth = 1;
+// 	canvasCtx.strokeStyle = window.getComputedStyle(document.body).color;
+// 	canvasCtx.beginPath();
+// 	var sliceWidth = canvas.width * 1.0 / bufferLength;
+// 	var x = 0;
+// 	for (var i = 0; i < bufferLength; i++) {
+// 		var v = dataArray[i] / 128.0;
+// 		var y = v * canvas.height / 2;
+// 		if (i === 0) {
+// 			canvasCtx.moveTo(x, y);
+// 		} else {
+// 			canvasCtx.lineTo(x, y);
+// 		}
+// 		x += sliceWidth;
+// 	}
+// 	canvasCtx.lineTo(canvas.width, canvas.height / 2);
+// 	canvasCtx.stroke();
+// }
 
-function drawBuffered() {
-	// draw at browser request/refresh rate
-	drawVisual = requestAnimationFrame(drawBuffered);
+// function drawBuffered() {
+// 	// draw at browser request/refresh rate
+// 	drawVisual = requestAnimationFrame(drawBuffered);
 
-	var canvas = document.querySelector('canvas.buffered');
-	var canvasCtx = canvas.getContext('2d');
+// 	var canvas = document.querySelector('canvas.buffered');
+// 	var canvasCtx = canvas.getContext('2d');
 
-	// make internal width and height match css width and height
-	var canvasStyle = window.getComputedStyle(canvas);
-	canvas.width = canvasStyle.width.substring(0, canvasStyle.width.indexOf('px'));
-	canvas.height = canvasStyle.height.substring(0, canvasStyle.height.indexOf('px'));
+// 	// make internal width and height match css width and height
+// 	var canvasStyle = window.getComputedStyle(canvas);
+// 	canvas.width = canvasStyle.width.substring(0, canvasStyle.width.indexOf('px'));
+// 	canvas.height = canvasStyle.height.substring(0, canvasStyle.height.indexOf('px'));
 
-	// clear canvas
-	canvasCtx.fillStyle = window.getComputedStyle(document.body).backgroundColor;
-	canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+// 	// clear canvas
+// 	canvasCtx.fillStyle = window.getComputedStyle(document.body).backgroundColor;
+// 	canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-	// draw buffered areas
-	var myAudio = $('audio.player')[0];
-	var inc = canvas.width / myAudio.duration;
-	for (i = 0; i < myAudio.buffered.length; i++) {
-		var startX = myAudio.buffered.start(i) * inc;
-		var endX = myAudio.buffered.end(i) * inc;
-		canvasCtx.fillStyle = window.getComputedStyle(document.body).color;
-		canvasCtx.fillRect(startX, 0, endX - startX, canvas.height);
-	}
-}
+// 	// draw buffered areas
+// 	var myAudio = $('audio.player')[0];
+// 	var inc = canvas.width / myAudio.duration;
+// 	for (i = 0; i < myAudio.buffered.length; i++) {
+// 		var startX = myAudio.buffered.start(i) * inc;
+// 		var endX = myAudio.buffered.end(i) * inc;
+// 		canvasCtx.fillStyle = window.getComputedStyle(document.body).color;
+// 		canvasCtx.fillRect(startX, 0, endX - startX, canvas.height);
+// 	}
+// }
 
 function stringifyTime(time) {
 	var minutes = Math.floor(time / 60);
@@ -191,6 +206,8 @@ function upDir() {
 	// show loading message
 	$('.browser').hide();
 	$('.loading_message').show();
+
+	playlistDirty = true;
 
 	dirStack.pop();
 	if (dirStack.length == 0) {
@@ -252,6 +269,7 @@ function handleDirContents(currentDir, dirEntries) {
 		// show loading message
 		$('.browser').hide();
 		$('.loading_message').show();
+		playlistDirty = true;
 		$.get(dir.dirUrl, function (data, status) {
 			if (status == 'success') {
 				dirStack.push(dir);
@@ -279,8 +297,8 @@ function handleDirContents(currentDir, dirEntries) {
 		}
 	}
 	$('.browser .track').click(function () {
-		// fix suspended AudioContext on Chrome
-		audioCtx.resume();
+		// // fix suspended AudioContext on Chrome
+		// audioCtx.resume();
 		// try to prevent browser sleep
 		if (wakeLockEnabled == false) {
 			wakeLockEnabled = true;
@@ -290,18 +308,31 @@ function handleDirContents(currentDir, dirEntries) {
 				console.log("noSleep enabled");
 			}
 		}
+
 		var track = $(this).data('track');
-		//console.log('clicked track ' + JSON.stringify(track));
-		playlist = [];
-		playlistIndex = 0;
-		$('.browser .track').each(function (index) {
-			var t = $(this).data('track');
-			playlist.push(t);
-			if (track === t) {
-				playlistIndex = index;
-			}
-		});
-		audioPlay();
+		audioStop();
+		if (playlistDirty) {
+			// remove previous tracks from player
+			player.removeAllTracks();
+			//console.log('clicked track ' + JSON.stringify(track));
+			playlist = [];
+			var playlistIndex = 0;
+			$('.browser .track').each(function (index) {
+				var t = $(this).data('track');
+				playlist.push(t);
+				player.addTrack(t.playUrl);
+				if (track === t) {
+					playlistIndex = index;
+				}
+			});
+			playlistDirty = false;
+			player.gotoTrack(playlistIndex);
+			audioPlay();
+		} else {
+			player.gotoTrack(track.playUrl);
+			audioPlay();
+		}
+
 		return false;
 	});
 }
@@ -314,15 +345,8 @@ function revealElement(element) {
 	}
 }
 
-function audioStop() {
-	$('audio.player').get(0).pause();
-	$('audio.player').get(0).currentTime = 0;
-	$('div.progress-bar').width('0%');
-}
-
-function audioPlay() {
-	audioStop();
-	var track = playlist[playlistIndex];
+function updateSongInfo() {
+	var track = playlist[getPlaylistIndex()];
 	// highlight in playlist
 	$('.browser .track').removeClass('bg-primary');
 	$('.browser .track').each(function () {
@@ -336,69 +360,61 @@ function audioPlay() {
 	document.title = track.title;
 	$('.currentSong').html(track.title);
 	$('.currentArtist').html(track.artist);
-	// load song
-	$('audio.player').empty();
-	$('audio.player').append('<source src="' + track.playUrl + '" type="audio/mpeg" />');
-	$('audio.player').get(0).load();
-	// start playback
-	// $('audio.player').get(0).play();
-	setTimeout(function () {
-		$('audio.player').get(0).play();
-	}, 100);
+}
+
+function audioStop() {
+	player.stop();
+	player.setPosition(0);
+}
+
+function audioPlay() {
+	player.cue();
 }
 
 function audioPause() {
-	if ($('audio.player').get(0).paused) {
-		$('audio.player').get(0).play();
+	if (playerPaused) {
+		player.play();
 	} else {
-		$('audio.player').get(0).pause();
+		player.pause();
 	}
 }
 
 function audioSeekBackwards(seconds) {
-	if (!$('audio.player').get(0).paused) {
-		$('audio.player').get(0).currentTime -= seconds;
+	if (!playerPaused) {
+		var position = player.getPosition();
+		position -= 1000 * seconds;
+		player.setPosition(position);
 	}
 }
 
 function audioSeekForwards(seconds) {
-	if (!$('audio.player').get(0).paused) {
-		$('audio.player').get(0).currentTime += seconds;
+	if (!playerPaused) {
+		var position = player.getPosition();
+		position += 1000 * seconds;
+		player.setPosition(position);
 	}
 }
 
 function audioPrevious() {
-	audioStop();
-	if (playlist.length == 0) {
-		return;
-	}
-	playlistIndex--;
-	if (playlistIndex < 0) {
-		playlistIndex = playlist.length - 1;
-	}
-	audioPlay();
+	player.prevtrack();
+	player.cue();
 }
 
 function audioNext() {
-	audioStop();
-	if (playlist.length == 0) {
-		return;
-	}
-	playlistIndex++;
-	if (playlistIndex > (playlist.length - 1)) {
-		playlistIndex = 0;
-	}
-	audioPlay();
+	player.next();
+	player.cue();
 }
 
 function audioRepeat() {
 	if (repeat) {
 		repeat = false;
-		//$('button.repeat').removeClass('active');
 		$('button.repeat').css('filter', 'invert(0%)');
 	} else {
 		repeat = true;
-		//$('button.repeat').addClass('active');
 		$('button.repeat').css('filter', 'invert(100%)');
 	}
+}
+
+function getPlaylistIndex() {
+	return player.getIndex();
 }
