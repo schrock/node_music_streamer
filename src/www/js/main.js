@@ -1,5 +1,5 @@
 // const { Gapless5 } = require("@regosen/gapless-5");
-const player = new Gapless5({ useWebAudio: false, loop: true, loadLimit: 3 });
+const player = new Gapless5({ useWebAudio: false, loop: true, loadLimit: 2 });
 var playerPaused = true;
 
 var playlist = [];
