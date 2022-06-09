@@ -1,5 +1,5 @@
 // const { Gapless5 } = require("@regosen/gapless-5");
-const player = new Gapless5({ useWebAudio: false, loop: true, loadLimit: 2 });
+var player = null;
 var playerPaused = true;
 
 var playlist = [];
@@ -21,42 +21,20 @@ $(document).ready(function () {
 	// get root browser contents
 	upDir();
 
-	// setup player callbacks
-	player.onplay = function () {
-		playerPaused = false;
-		$('button.pause').html('<span class="oi oi-media-pause"></span>');
-		$('div.progress-bar').addClass('progress-bar-animated');
-	}
-	player.onpause = function () {
-		playerPaused = true;
-		$('button.pause').html('<span class="oi oi-media-play"></span>');
-		$('div.progress-bar').removeClass('progress-bar-animated');
-	}
-	player.onstop = function () {
-		playerPaused = true;
-		$('button.pause').html('<span class="oi oi-media-play"></span>');
-		$('div.progress-bar').removeClass('progress-bar-animated');
-	}
-	player.onnext = function (from_track, to_track) {
-		if (repeat) {
-			player.gotoTrack(from_track);
-			player.cue();
-		}
-	}
-
 	// hookup progress bar
 	setInterval(function () {
-		var currentTime = player.getPosition() / 1000;
-		//var duration = $('audio.player').get(0).duration;
-		var track = playlist[getPlaylistIndex()];
-		if (track !== undefined) {
-			updateSongInfo();
-			var duration = track.duration;
-			$('div.progress-bar').width(currentTime / duration * 100 + '%');
-			// update time display
-			$('div.progress-bar').html('<div>' + stringifyTime(currentTime) + '</div>');
-			$('.currentTime').html(stringifyTime(currentTime) + '&nbsp;/&nbsp;' + stringifyTime(duration));
-			$('.currentInfo').html(playlist[getPlaylistIndex()].replaygainAlbum + '&nbsp;' + playlist[getPlaylistIndex()].format);
+		if (player !== null) {
+			var currentTime = player.getPosition() / 1000;
+			//var duration = $('audio.player').get(0).duration;
+			var track = playlist[getPlaylistIndex()];
+			if (track !== undefined) {
+				var duration = track.duration;
+				$('div.progress-bar').width(currentTime / duration * 100 + '%');
+				// update time display
+				$('div.progress-bar').html('<div>' + stringifyTime(currentTime) + '</div>');
+				$('.currentTime').html(stringifyTime(currentTime) + '&nbsp;/&nbsp;' + stringifyTime(duration));
+				$('.currentInfo').html(playlist[getPlaylistIndex()].replaygainAlbum + '&nbsp;' + playlist[getPlaylistIndex()].format);
+			}
 		}
 	}, 500);
 	$('div.progress').click(function (e) {
@@ -310,23 +288,21 @@ function handleDirContents(currentDir, dirEntries) {
 		}
 
 		var track = $(this).data('track');
-		audioStop();
 		if (playlistDirty) {
-			// remove previous tracks from player
-			player.removeAllTracks();
 			//console.log('clicked track ' + JSON.stringify(track));
 			playlist = [];
+			var trackUrls = [];
 			var playlistIndex = 0;
 			$('.browser .track').each(function (index) {
 				var t = $(this).data('track');
 				playlist.push(t);
-				player.addTrack(t.playUrl);
+				trackUrls.push(t.playUrl);
 				if (track === t) {
 					playlistIndex = index;
 				}
 			});
 			playlistDirty = false;
-			player.gotoTrack(playlistIndex);
+			initializePlayer(trackUrls, playlistIndex);
 			audioPlay();
 		} else {
 			player.gotoTrack(track.playUrl);
@@ -335,6 +311,39 @@ function handleDirContents(currentDir, dirEntries) {
 
 		return false;
 	});
+}
+
+function initializePlayer(tracks, position) {
+	if (player !== null) {
+		audioStop();
+		player.removeAllTracks();
+		player = null;
+	}
+	console.log('position: ' + position);
+	player = new Gapless5({ useWebAudio: false, loop: true, loadLimit: 2, tracks: tracks, startingTrack: position });
+	// setup player callbacks
+	player.onplay = function () {
+		playerPaused = false;
+		updateSongInfo();
+		$('button.pause').html('<span class="oi oi-media-pause"></span>');
+		$('div.progress-bar').addClass('progress-bar-animated');
+	}
+	player.onpause = function () {
+		playerPaused = true;
+		$('button.pause').html('<span class="oi oi-media-play"></span>');
+		$('div.progress-bar').removeClass('progress-bar-animated');
+	}
+	player.onstop = function () {
+		playerPaused = true;
+		$('button.pause').html('<span class="oi oi-media-play"></span>');
+		$('div.progress-bar').removeClass('progress-bar-animated');
+	}
+	player.onnext = function (from_track, to_track) {
+		if (repeat) {
+			player.gotoTrack(from_track);
+			player.cue();
+		}
+	}
 }
 
 function revealElement(element) {
