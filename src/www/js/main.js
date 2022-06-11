@@ -1,4 +1,3 @@
-// const { Gapless5 } = require("@regosen/gapless-5");
 var player = null;
 var playerPaused = true;
 
@@ -320,7 +319,7 @@ function initializePlayer(tracks, position) {
 		player = null;
 	}
 	console.log('position: ' + position);
-	player = new Gapless5({ useWebAudio: false, loop: true, loadLimit: 2, tracks: tracks, startingTrack: position });
+	player = new Gapless5({ logLevel: LogLevel.Debug, useWebAudio: false, loop: true, loadLimit: 2, tracks: tracks, startingTrack: position });
 	// setup player callbacks
 	player.onplay = function () {
 		playerPaused = false;
