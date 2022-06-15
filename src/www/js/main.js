@@ -1,5 +1,4 @@
 var player = null;
-var playerPaused = true;
 
 var playlist = [];
 var playlistDirty = true;
@@ -318,22 +317,18 @@ function initializePlayer(tracks, position) {
 		player.removeAllTracks();
 		player = null;
 	}
-	console.log('position: ' + position);
 	player = new Gapless5({ logLevel: LogLevel.Debug, useWebAudio: false, loop: true, loadLimit: 2, tracks: tracks, startingTrack: position });
 	// setup player callbacks
 	player.onplay = function () {
-		playerPaused = false;
 		updateSongInfo();
 		$('button.pause').html('<span class="oi oi-media-pause"></span>');
 		$('div.progress-bar').addClass('progress-bar-animated');
 	}
 	player.onpause = function () {
-		playerPaused = true;
 		$('button.pause').html('<span class="oi oi-media-play"></span>');
 		$('div.progress-bar').removeClass('progress-bar-animated');
 	}
 	player.onstop = function () {
-		playerPaused = true;
 		$('button.pause').html('<span class="oi oi-media-play"></span>');
 		$('div.progress-bar').removeClass('progress-bar-animated');
 	}
@@ -342,6 +337,7 @@ function initializePlayer(tracks, position) {
 			player.gotoTrack(from_track);
 			player.cue();
 		}
+		updateSongInfo();
 	}
 }
 
@@ -380,27 +376,19 @@ function audioPlay() {
 }
 
 function audioPause() {
-	if (playerPaused) {
-		player.play();
-	} else {
-		player.pause();
-	}
+	player.playpause();
 }
 
 function audioSeekBackwards(seconds) {
-	if (!playerPaused) {
-		var position = player.getPosition();
-		position -= 1000 * seconds;
-		player.setPosition(position);
-	}
+	var position = player.getPosition();
+	position -= 1000 * seconds;
+	player.setPosition(position);
 }
 
 function audioSeekForwards(seconds) {
-	if (!playerPaused) {
-		var position = player.getPosition();
-		position += 1000 * seconds;
-		player.setPosition(position);
-	}
+	var position = player.getPosition();
+	position += 1000 * seconds;
+	player.setPosition(position);
 }
 
 function audioPrevious() {
