@@ -368,7 +368,6 @@ function updateSongInfo() {
 
 function audioStop() {
 	player.stop();
-	player.setPosition(0);
 }
 
 function audioPlay() {
