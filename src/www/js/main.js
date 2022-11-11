@@ -317,7 +317,7 @@ function initializePlayer(tracks, position) {
 		player.removeAllTracks();
 		player = null;
 	}
-	player = new Gapless5({ logLevel: LogLevel.Debug, useWebAudio: false, loop: true, loadLimit: 2, tracks: tracks, startingTrack: position });
+	player = new Gapless5({ logLevel: LogLevel.Debug, useWebAudio: false, loop: true, loadLimit: 1, tracks: tracks, startingTrack: position });
 	// setup player callbacks
 	player.onplay = function () {
 		updateSongInfo();
