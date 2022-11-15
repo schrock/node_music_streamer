@@ -212,6 +212,10 @@ module.exports = class Worker {
 					console.log('Play response using ffmpeg finished. Killing ffmpeg for ' + queryPath);
 					command.kill();
 				});
+				res.on('close', function () {
+					console.log('Play response using ffmpeg closed. Killing ffmpeg for ' + queryPath);
+					command.kill();
+				});
 			}
 		}
 
