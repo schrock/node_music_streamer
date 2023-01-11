@@ -111,9 +111,6 @@ module.exports = class Worker {
 		function getPlay(req, res) {
 			console.log('Play request from ' + req.connection.remoteAddress);
 
-			res.header('Accept-Ranges', 'bytes');
-			res.setHeader('Content-Type', 'audio/mpeg');
-
 			var range = req.headers.range;
 			if (range == null) {
 				range = 'bytes=0-';
@@ -151,6 +148,18 @@ module.exports = class Worker {
 
 				// fs.createReadStream(realPath, { start: startByte, end: endByte }).pipe(res, { end: true });
 
+				// res.setHeader('Accept-Ranges', 'bytes');
+				switch (ext) {
+					case 'm4a':
+						res.setHeader('Content-Type', 'audio/mp4');
+						break;
+					case 'ogg':
+						res.setHeader('Content-Type', 'audio/ogg');
+						break;
+					default:
+						res.setHeader('Content-Type', 'audio/mpeg');
+				}
+
 				res.sendFile(realPath);
 			} else {
 				// convert to mp3 using ffmpeg
@@ -167,6 +176,8 @@ module.exports = class Worker {
 				}
 				// console.log('startByte: ' + startByte);
 				// console.log('endByte:   ' + endByte);
+				res.setHeader('Accept-Ranges', 'bytes');
+				res.setHeader('Content-Type', 'audio/mpeg');
 				res.setHeader('Content-Range', 'bytes ' + startByte + '-' + endByte + '/' + fileSize);
 				res.setHeader('Content-Length', endByte - startByte + 1);
 				res.status(206);
