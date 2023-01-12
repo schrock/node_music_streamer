@@ -148,7 +148,7 @@ module.exports = class Worker {
 
 				// fs.createReadStream(realPath, { start: startByte, end: endByte }).pipe(res, { end: true });
 
-				// res.setHeader('Accept-Ranges', 'bytes');
+				res.setHeader('Accept-Ranges', 'bytes');
 				switch (ext) {
 					case 'm4a':
 						res.setHeader('Content-Type', 'audio/mp4');
