@@ -8,15 +8,7 @@ nconf.defaults({
 	"bitrate": 256,
 	"extensions": ["mp3", "m4a", "flac", "ogg", "ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm"],
 	"httpsCertFile": "./localhost.cert",
-	"httpsKeyFile": "./localhost.key",
-	"ips": [
-		'127.0.0.1', '::ffff:127.0.0.1',
-		['192.168.0.0', '192.168.255.255'], ['::ffff:192.168.0.0', '::ffff:192.168.255.255'],
-		['128.149.0.0', '128.149.255.255'], ['::ffff:128.149.0.0', '::ffff:128.149.255.255'],
-		['137.78.0.0', '137.78.255.255'], ['::ffff:137.78.0.0', '::ffff:137.78.255.255'],
-		['137.79.0.0', '137.79.255.255'], ['::ffff:137.79.0.0', '::ffff:137.79.255.255'],
-		['174.192.0.0', '174.255.255.255'], ['::ffff:174.192.0.0', '::ffff:174.255.255.255']
-	]
+	"httpsKeyFile": "./localhost.key"
 });
 
 // 3rd party
@@ -40,7 +32,6 @@ if (cluster.isMaster) {
 	console.log('extensions: ' + JSON.stringify(nconf.get('extensions'), null, 4));
 	console.log('httpsCertFile: ' + JSON.stringify(nconf.get('httpsCertFile'), null, 4));
 	console.log('httpsKeyFile: ' + JSON.stringify(nconf.get('httpsKeyFile'), null, 4));
-	console.log('ips: ' + JSON.stringify(nconf.get('ips'), null, 4));
 
 	var numCPUs = os.cpus().length;
 	for (var i = 0; i < numCPUs; i++) {
