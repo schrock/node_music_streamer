@@ -30,7 +30,7 @@ module.exports = class MediaFile extends DirEntry {
 				var title = mediaFile.name;
 				var artist = '';
 				var album = '';
-				var duration = 1200;
+				var duration = 300;
 				var replaygainTrack = '';
 				var replaygainAlbum = '';
 				// parse metadata

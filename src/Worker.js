@@ -182,17 +182,17 @@ module.exports = class Worker {
 				// console.log('startTime: ' + startTime);
 				// console.log('endTime:   ' + endTime);
 
-				// For SPCs, copy file and modify duration in id666 header.
+				// For SPCs, copy file and modify duration in id666 header,
+				// which is 3 bytes at position 0xa9.
 				if (ext != null && ext == 'spc') {
 					var copyPath = os.tmpdir() + '/' + realPath.substring(realPath.lastIndexOf('/') + 1);
 					fs.copyFileSync(realPath, copyPath);
 					realPath = copyPath;
 					console.log('spc copy location: ' + realPath);
-					// modify duration to 20 minutes (1200 seconds)
-					var durationBuffer = buffer.Buffer.alloc(4);
-					durationBuffer.writeUInt16LE(1200, 1);
+					var durationBuffer = buffer.Buffer.alloc(3);
+					durationBuffer.writeUInt16LE(duration, 0);
 					var fd = fs.openSync(realPath, 'r+');
-					fs.writeSync(fd, durationBuffer, 1, durationBuffer.byteLength - 1, 0xa9);
+					fs.writeSync(fd, durationBuffer, 0, durationBuffer.byteLength, 0xa9);
 					fs.closeSync(fd);
 				}
 
