@@ -6,6 +6,11 @@ module.exports = class MediaFile extends DirEntry {
 	constructor(name, path, playUrl) {
 		super('file', name, path);
 		this.playUrl = playUrl;
+		var extIndex = name.lastIndexOf('.');
+		this.ext = null;
+		if (extIndex > 0) {
+			this.ext = name.substring(extIndex + 1);
+		}
 	}
 
 	init() {
@@ -90,7 +95,10 @@ module.exports = class MediaFile extends DirEntry {
 						album = tags.game;
 					}
 					// duration
-					if (metadata.format.duration != null && typeof metadata.format.duration == 'number') {
+					if (mediaFile.ext != null && mediaFile.ext == 'spc') {
+						// For SPCs, use 20 minutes (1200 seconds) as the duration.
+						duration = 1200;
+					} else if (metadata.format.duration != null && typeof metadata.format.duration == 'number') {
 						duration = metadata.format.duration;
 					}
 					// gain

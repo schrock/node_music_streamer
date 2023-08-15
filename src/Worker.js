@@ -1,9 +1,11 @@
 'use strict';
 
 // 3rd party
+const buffer = require('buffer');
 const express = require('express');
 const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
+const os = require('os');
 
 // classes
 const DirEntry = require('./DirEntry.js');
@@ -179,6 +181,20 @@ module.exports = class Worker {
 				var endTime = endByte / (nconf.get('bitrate') * 1000 / 8);
 				// console.log('startTime: ' + startTime);
 				// console.log('endTime:   ' + endTime);
+
+				// For SPCs, copy file and modify duration in id666 header.
+				if (ext != null && ext == 'spc') {
+					var copyPath = os.tmpdir() + '/' + realPath.substring(realPath.lastIndexOf('/') + 1);
+					fs.copyFileSync(realPath, copyPath);
+					realPath = copyPath;
+					console.log('spc copy location: ' + realPath);
+					// modify duration to 20 minutes (1200 seconds)
+					var durationBuffer = buffer.Buffer.alloc(4);
+					durationBuffer.writeUInt16LE(1200, 1);
+					var fd = fs.openSync(realPath, 'r+');
+					fs.writeSync(fd, durationBuffer, 1, durationBuffer.byteLength - 1, 0xa9);
+					fs.closeSync(fd);
+				}
 
 				var command = ffmpeg(realPath);
 				if (track_index > 0) {
