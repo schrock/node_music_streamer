@@ -3,8 +3,8 @@ var playlistIndex = 0;
 
 var dirStack = [];
 
-var wakeLockEnabled = false;
-var noSleep = new NoSleep();
+// var wakeLockEnabled = false;
+// var noSleep = new NoSleep();
 
 var repeat = false;
 
@@ -281,15 +281,15 @@ function handleDirContents(currentDir, dirEntries) {
 	$('.browser .track').click(function () {
 		// fix suspended AudioContext on Chrome
 		audioCtx.resume();
-		// try to prevent browser sleep
-		if (wakeLockEnabled == false) {
-			wakeLockEnabled = true;
-			// disable on desktop due to high CPU usage
-			if (screen.width < 768) {
-				noSleep.enable();
-				console.log("noSleep enabled");
-			}
-		}
+		// // try to prevent browser sleep
+		// if (wakeLockEnabled == false) {
+		// 	wakeLockEnabled = true;
+		// 	// disable on desktop due to high CPU usage
+		// 	if (screen.width < 768) {
+		// 		noSleep.enable();
+		// 		console.log("noSleep enabled");
+		// 	}
+		// }
 		var track = $(this).data('track');
 		//console.log('clicked track ' + JSON.stringify(track));
 		playlist = [];
