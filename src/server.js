@@ -4,6 +4,7 @@ const buffer = require('buffer');
 const cluster = require('cluster');
 const os = require('os');
 const express = require('express');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const ffmpeg = require('fluent-ffmpeg');
@@ -35,6 +36,7 @@ if (cluster.isMaster) {
 	});
 } else {
 	var app = express();
+	app.use(helmet());
 	app.use(bodyParser.urlencoded({extended: true}));
 	app.use(cookieParser());
 	app.use(checkSessionId);
