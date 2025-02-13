@@ -36,7 +36,7 @@ if (cluster.isMaster) {
 	});
 } else {
 	var app = express();
-	app.use(helmet());
+	app.use(helmet({contentSecurityPolicy: false}));
 	app.use(bodyParser.urlencoded({extended: true}));
 	app.use(cookieParser());
 	app.use(checkSessionId);
