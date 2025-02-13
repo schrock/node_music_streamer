@@ -4,14 +4,23 @@ const buffer = require('buffer');
 const cluster = require('cluster');
 const os = require('os');
 const express = require('express');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const ffmpeg = require('fluent-ffmpeg');
 const http = require('http');
 const fs = require('fs');
+const crypto = require('crypto');
 
 // classes
 const DirEntry = require('./DirEntry.js');
 const Directory = require('./Directory.js');
 const MediaFile = require('./MediaFile.js');
+
+const safePaths = [
+	process.env.WEBBASEDIR + '/login.html',
+	process.env.WEBBASEDIR + '/login',
+	process.env.WEBBASEDIR + '/logout'
+];
 
 if (cluster.isMaster) {
 	var numCPUs = os.cpus().length;
@@ -26,6 +35,9 @@ if (cluster.isMaster) {
 	});
 } else {
 	var app = express();
+	app.use(bodyParser.urlencoded({extended: true}));
+	app.use(cookieParser());
+	app.use(checkSessionId);
 	app.use(function (req, res, next) {
 		res.header("Cache-Control", "no-store, no-cache");
 		next();
@@ -47,6 +59,8 @@ if (cluster.isMaster) {
 		});
 		next();
 	});
+	app.post(process.env.WEBBASEDIR + '/login', postLogin);
+	app.get(process.env.WEBBASEDIR + '/logout', getLogout);
 	app.get(process.env.WEBBASEDIR + '/dir', getDir);
 	app.get(process.env.WEBBASEDIR + '/play', getPlay);
 	app.use(process.env.WEBBASEDIR + '/', express.static('src/www'));
@@ -57,6 +71,65 @@ if (cluster.isMaster) {
 	server.listen(httpPort, function () {
 		console.log('worker running on port ' + httpPort + '...');
 	});
+}
+
+function checkSessionId(req, res, next) {
+	if (safePaths.includes(req.path)) {
+		next();
+	} else {
+		// check session id
+		var sessionId = req.cookies.sessionId;
+		if (fs.existsSync('session_cache/' + sessionId)) {
+			next();
+		} else {
+			res.status(303);
+			res.setHeader('Location', 'login.html');
+			res.send('Valid login credentials required for access. Redirecting to login page...');
+		}
+	}
+}
+
+function postLogin(req, res) {
+	var username = req.body.username;
+	var password = req.body.password;
+	var userEntries = fs.readFileSync('conf/users', {encoding: 'utf8', flag: 'r'}).split("\n");
+	for (var userEntry of userEntries) {
+		if (userEntry.startsWith(username + ":")) {
+			var userEntryParts = userEntry.split(':', 3);
+			var salt = userEntryParts[1];
+			var finalHash = userEntryParts[2];
+			var hash = crypto.createHash('sha512').update(password + salt).digest('hex');
+			for (let i = 0; i < 1000000; i++) {
+				hash = crypto.createHash('sha512').update(hash + password + salt).digest('hex');
+			}
+			if (hash == finalHash) {
+				var sessionId = crypto.randomBytes(32).toString('hex');
+				fs.writeFileSync('session_cache/' + sessionId, username, {encoding: 'utf8', flush: true});
+				res.setHeader('Set-Cookie', 'sessionId=' + sessionId + '; Path=' + process.env.WEBBASEDIR);
+				res.status(303);
+				res.setHeader('Location', 'index.html');
+				res.contentType('text/plain');
+				res.send('Login successful. Redirecting...');
+				return;
+			} else {
+				// only check first matching username entry
+				break;
+			}
+		}
+	}
+	res.status(303);
+	res.setHeader('Location', 'login.html');
+	res.contentType('text/plain');
+	res.send('Invalid credentials.');
+}
+
+function getLogout(req, res) {
+	var sessionId = req.cookies.sessionId;
+	fs.unlinkSync('session_cache/' + sessionId);
+	res.setHeader('Set-Cookie', 'sessionId=' + sessionId + '; Path=' + process.env.WEBBASEDIR + '; expires=Thu, 01 Jan 1970 00:00:00 GMT');
+	res.status(303);
+	res.setHeader('Location', 'login.html');
+	res.send('Logged out. Redirecting to login page...');
 }
 
 function getDir(req, res) {
@@ -129,8 +202,8 @@ function getPlay(req, res) {
 		ext = realPath.substring(extIndex + 1);
 	}
 
-	// return original file if mp3, m4a, or ogg
-	if (ext != null && (ext == 'mp3' || ext == 'm4a' || ext == 'ogg')) {
+	// return original file if mp3, m4a, ogg, flac
+	if (ext != null && (ext == 'mp3' || ext == 'm4a' || ext == 'ogg' || ext == 'flac')) {
 		// return requested portion of original file
 		console.log('streaming original ' + range + ' : ' + queryPath);
 
@@ -155,6 +228,9 @@ function getPlay(req, res) {
 				break;
 			case 'ogg':
 				res.setHeader('Content-Type', 'audio/ogg');
+				break;
+			case 'flac':
+				res.setHeader('Content-Type', 'audio/flac');
 				break;
 			default:
 				res.setHeader('Content-Type', 'audio/mpeg');
