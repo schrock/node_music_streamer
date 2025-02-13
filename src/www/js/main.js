@@ -194,7 +194,7 @@ function upDir() {
 
 	dirStack.pop();
 	if (dirStack.length == 0) {
-		$.get('/dir?path=', function (data, status) {
+		$.get('dir?path=', function (data, status) {
 			if (status == 'success') {
 				handleDirContents(null, data);
 				// hide loading message
