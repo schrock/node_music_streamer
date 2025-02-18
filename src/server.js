@@ -78,7 +78,7 @@ function checkSessionId(req, res, next) {
 		next();
 	} else {
 		// check session id
-		var sessionId = req.cookies.sessionId;
+		var sessionId = req.cookies.musicAppSessionId;
 		if (fs.existsSync('session_cache/' + sessionId)) {
 			next();
 		} else {
@@ -105,7 +105,8 @@ function postLogin(req, res) {
 			if (hash == finalHash) {
 				var sessionId = crypto.randomBytes(32).toString('hex');
 				fs.writeFileSync('session_cache/' + sessionId, username, {encoding: 'utf8', flush: true});
-				res.setHeader('Set-Cookie', 'sessionId=' + sessionId + '; Path=' + process.env.WEBBASEDIR);
+				var expires = new Date(new Date().getTime()+1000*60*60*24*365).toGMTString();
+				res.setHeader('Set-Cookie', 'musicAppSessionId=' + sessionId + '; Path=' + process.env.WEBBASEDIR + '; Secure; HttpOnly; expires=' + expires);
 				res.status(303);
 				res.setHeader('Location', 'index.html');
 				res.contentType('text/plain');
@@ -124,9 +125,9 @@ function postLogin(req, res) {
 }
 
 function getLogout(req, res) {
-	var sessionId = req.cookies.sessionId;
+	var sessionId = req.cookies.musicAppSessionId;
 	fs.unlinkSync('session_cache/' + sessionId);
-	res.setHeader('Set-Cookie', 'sessionId=' + sessionId + '; Path=' + process.env.WEBBASEDIR + '; expires=Thu, 01 Jan 1970 00:00:00 GMT');
+	res.setHeader('Set-Cookie', 'musicAppSessionId=' + sessionId + '; Path=' + process.env.WEBBASEDIR + '; Secure; HttpOnly; expires=Thu, 01 Jan 1970 00:00:00 GMT');
 	res.status(303);
 	res.setHeader('Location', 'login.html');
 	res.send('Logged out. Redirecting to login page...');
