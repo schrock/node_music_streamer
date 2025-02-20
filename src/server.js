@@ -17,6 +17,7 @@ const Directory = require('./Directory.js');
 const MediaFile = require('./MediaFile.js');
 
 const safePaths = [
+	process.env.WEBBASEDIR + '/favicon.png',
 	process.env.WEBBASEDIR + '/login.html',
 	process.env.WEBBASEDIR + '/login',
 	process.env.WEBBASEDIR + '/logout'
