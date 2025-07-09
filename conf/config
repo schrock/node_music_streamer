@@ -2,4 +2,4 @@ PORT=8083
 MUSICDIR="/mnt/media/music"
 BITRATE=256
 EXTENSIONS="mp3:m4a:flac:ogg:ay:gbs:gym:hes:kss:nsf:nsfe:sap:spc:vgm"
-WEBBASEDIR="/music"
+WEBBASEDIR=""
